@@ -8,13 +8,13 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="page container py-4 py-md-5">
-    <header class="hero">
-      <p class="eyebrow">Wisła 1200</p>
-      <h1>Pogoda na trasie</h1>
-      <p class="lead">Temperatura, wiatr i opady godzinowe dla dni 4.07–11.07.</p>
-    </header>
+  <main class="page container py-3 py-md-4">
+    <nav class="tabs nav nav-pills mb-3" aria-label="Widoki">
+      <button id="weatherTab" class="nav-link active" type="button" data-tab="weather">Pogoda</button>
+      <button id="shopsTab" class="nav-link" type="button" data-tab="shops">Sklepy</button>
+    </nav>
 
+    <section id="weatherPanel" class="tab-panel active">
     <section class="controls card shadow-sm" aria-label="Filtry">
       <div class="card-body d-flex flex-wrap align-items-end gap-3">
         <div>
@@ -28,6 +28,16 @@
 
     <section id="status" class="status" role="status">Ładowanie prognozy…</section>
     <section id="forecast" class="forecast" aria-live="polite"></section>
+    </section>
+
+    <section id="shopsPanel" class="tab-panel">
+      <div class="shops card shadow-sm">
+        <div class="card-body">
+          <h1 class="h5 mb-3">Sklepy na trasie</h1>
+          <div id="shopsList" class="shops-list"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="app.js"></script>

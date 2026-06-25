@@ -25,16 +25,43 @@ const routePoints = [
   { name: "Gdańsk", km: 1178, lat: 54.3520, lon: 18.6466 }
 ];
 
+const shops = [
+  [54, "Drogomyśl", "Sklep EMI"], [73, "Chybie", "Lewiatan, Intermarche"], [109, "Góra", "Żabka"],
+  [119, "Harmęże", "Sklep Euro"], [123, "Oświęcim", "Delikatesy Centrum"], [142, "Mętków", "Sklep Wisełka"],
+  [159, "Okleśna", "Sklepy spożywcze"], [181, "Facimiech", "Sklep spożywczy"], [195, "Kraków", "Żabka, KFC, BP"],
+  [207, "Kraków", "Żabka"], [209, "Kraków", "Biedronka, Carrefour Express, budki"], [212, "Kraków", "Orlen Kazimierz"],
+  [214, "Kraków", "Biedronka"], [227, "Brzegi", "Sklep spożywczy"], [234, "Niepołomice", "Zwał jak zwał, Orlen, Netto"],
+  [310, "Wietrzychowice", "Cezar Delikatesy"], [316, "Żabno", "Stacja Aramco"], [322, "Nieciecza", "Sklep spożywczy"],
+  [358, "Szczucin", "Orlen"], [360, "Rataje Słupskie", "Orlen"], [436, "Sandomierz", "Circle, Carrefour Express, Żabka, budki, knajpy, Orlen"],
+  [459, "Zawichost", "Żabka"], [471, "Annopol", "Biedronka, Spar, Lewiatan, knajpy"], [489, "Józefów", "Orlen, sklep spożywczy, Biedronka"],
+  [514, "Kępa Chotecka", "Odido"], [518, "Urządków", "Euro Sklep"], [529, "Kazimierz Dolny", "Budki, Lewiatan, Orlen"],
+  [543, "Puławy", "Biedronka, McDonald's"], [565, "Dęblin", "Lidl, Orlen"], [581, "Pawłowice", "Sklep ostatni"],
+  [624, "Wilga", "Bar Wilga"], [645, "Radwanków Szlachecki", "Artus"], [667, "Józefów", "Moya"],
+  [679, "Warszawa", "Circle, Biedronka, BP"], [688, "Warszawa", "Orlen"], [702, "Warszawa", "Biedronka, Lidl"],
+  [725, "Nowy Dwór Maz.", "McDonald's, MOL"], [760, "Czerwińsk nad Wisłą", "Dino, Lewiatan"], [769, "Wyszogród", "Delikatesy Centrum, Żabka, sklepy"],
+  [780, "Wyszogród", "Pitstop Podgórze"], [798, "Wykowo", "Lewiatan"], [810, "Płock", "Lewiatan"],
+  [816, "Płock", "Żabka, budki, market, Netto, Lidl"], [823, "Maszewo", "Dino, Lewiatan"], [847, "Dobrzyń nad Wisłą", "Delikatesy Centrum, Biedronka, Dino"],
+  [871, "Włocławek", "Lewiatan"], [885, "Bobrowniki", "Lewiatan"], [914, "Silno", "Żabka"],
+  [916, "Grabowiec", "Dino"], [920, "Toruń", "Biedronka"], [965, "Strzyżawa", "Artus"],
+  [968, "Ostromecko", "Żabka"], [1002, "Chełmno", "Biedronka, Żabka, budki"], [1028, "Grudziądz", "Biedronka"],
+  [1035, "Grudziądz", "Orlen"], [1075, "Opalenie", "Sklep spożywczy"], [1084, "Gniew", "Dino"],
+  [1105, "Mała Słońca", "Sklep spożywczy"], [1111, "Knybawa", "MOL"], [1161, "Sobieszewo", "Sklep Kami, Żabka"],
+  [1168, "Przejazdowo", "Lidl, Biedronka"], [1180, "Gdańsk", "Meta"]
+];
+
 const dateSelect = document.querySelector("#dateSelect");
 const refreshButton = document.querySelector("#refreshButton");
 const clearCacheButton = document.querySelector("#clearCacheButton");
 const statusEl = document.querySelector("#status");
 const forecastEl = document.querySelector("#forecast");
+const shopsListEl = document.querySelector("#shopsList");
 let forecasts = [];
 
 init();
 
 function init() {
+  initTabs();
+  renderShops();
   buildDateOptions();
   dateSelect.addEventListener("change", () => loadForecastsForDay(dateSelect.value));
   refreshButton.addEventListener("click", () => {
@@ -45,6 +72,27 @@ function init() {
   const defaultDate = defaultSelectedDate();
   dateSelect.value = defaultDate;
   loadForecastsForDay(defaultDate);
+}
+
+function initTabs() {
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tab;
+      document.querySelectorAll("[data-tab]").forEach((item) => item.classList.toggle("active", item === button));
+      document.querySelector("#weatherPanel").classList.toggle("active", tab === "weather");
+      document.querySelector("#shopsPanel").classList.toggle("active", tab === "shops");
+    });
+  });
+}
+
+function renderShops() {
+  shopsListEl.innerHTML = shops.map(([km, town, description]) => `
+    <article class="shop-item">
+      <span class="shop-km">${km} km</span>
+      <strong class="shop-town">${town}</strong>
+      <span class="shop-desc">${description}</span>
+    </article>
+  `).join("");
 }
 
 function defaultSelectedDate() {
@@ -96,7 +144,7 @@ async function loadForecastsForDay(date, options = {}) {
     return;
   }
 
-  statusEl.textContent = `Ładowanie prognozy z Open-Meteo dla ${formatDate(date)}…`;
+  statusEl.textContent = `Ładowanie danych Open-Meteo dla ${formatDate(date)}…`;
 
   try {
     forecasts = await loadRouteForecast(date);
@@ -150,7 +198,7 @@ async function loadRouteForecast(date) {
 
 function renderSelectedDay() {
   const date = dateSelect.value;
-  const cards = forecasts.map(({ point, data }) => buildPointDay(point, data, date));
+  const cards = forecasts.map((forecast) => buildPointDay(forecast.point, forecast.data, date));
 
   forecastEl.innerHTML = "";
   cards.forEach((card) => forecastEl.appendChild(renderCard(card)));
@@ -209,20 +257,22 @@ function renderCard(card) {
     <summary>
       <span class="timeline-point"><span class="place">${card.point.name}</span></span>
       ${metric("Temperatura", `${fmt(card.tempMin)}–${fmt(card.tempMax)} °C`)}
-      ${metric("Wiatr", `${fmt(card.windMax)} km/h (${fmt(card.gustMax)})`)}
+      ${metric("Wiatr", windSummary(card))}
       ${metric("Opady", rainSummary(card), "rain")}
       ${alertsHtml(card)}
     </summary>
-    <div class="hourly-wrap">
-      <table class="hourly">
-        <thead>
-          <tr><th>Godzina</th><th>Temp.</th><th>Wiatr</th><th>Kierunek</th><th>Opad</th><th>Szansa</th></tr>
-        </thead>
-        <tbody>
-          ${card.hourly.map(renderHour).join("")}
-        </tbody>
-      </table>
-    </div>
+    ${card.hourly.length ? `
+      <div class="hourly-wrap">
+        <table class="hourly">
+          <thead>
+            <tr><th>Godzina</th><th>Temp.</th><th>Wiatr</th><th>Kierunek</th><th>Opad</th><th>Szansa</th></tr>
+          </thead>
+          <tbody>
+            ${card.hourly.map(renderHour).join("")}
+          </tbody>
+        </table>
+      </div>
+    ` : ""}
   `;
   return details;
 }
@@ -239,6 +289,11 @@ function renderHour(hour) {
       <td>${fmt(hour.precipitationProbability)}%</td>
     </tr>
   `;
+}
+
+function windSummary(card) {
+  if (card.gustMax === null || card.gustMax === undefined) return `${fmt(card.windMax)} km/h`;
+  return `${fmt(card.windMax)} km/h (${fmt(card.gustMax)})`;
 }
 
 function conditionLabel(card) {
