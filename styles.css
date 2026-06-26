@@ -178,6 +178,12 @@ label { font-weight: 700; }
 }
 
 .rain { color: var(--rain); }
+.rain.dry { color: #047857; }
+.rain.drizzle { color: #0891b2; }
+.rain.light-rain { color: #0369a1; }
+.rain.rain { color: #1d4ed8; }
+.rain.heavy-rain { color: #b45309; }
+.rain.downpour { color: #b91c1c; }
 .warning { color: var(--warn); }
 .ok { color: #047857; }
 .danger { color: #b91c1c; }
@@ -236,9 +242,19 @@ label { font-weight: 700; }
   letter-spacing: .04em;
 }
 
-.shops {
+.shops,
+.map-embed {
   border: 0;
   border-radius: 18px;
+  overflow: hidden;
+}
+
+.map-embed iframe {
+  display: block;
+  width: 100%;
+  height: min(72vh, 720px);
+  min-height: 520px;
+  border: 0;
 }
 
 .shops-list {
@@ -466,6 +482,11 @@ label { font-weight: 700; }
   .hourly th,
   .hourly td {
     padding: 8px 9px;
+  }
+
+  .map-embed iframe {
+    height: calc(100vh - 94px);
+    min-height: 420px;
   }
 
   .shops-list {

@@ -81,6 +81,7 @@ function initTabs() {
       document.querySelectorAll("[data-tab]").forEach((item) => item.classList.toggle("active", item === button));
       document.querySelector("#weatherPanel").classList.toggle("active", tab === "weather");
       document.querySelector("#shopsPanel").classList.toggle("active", tab === "shops");
+      document.querySelector("#mapPanel").classList.toggle("active", tab === "map");
     });
   });
 }
@@ -233,7 +234,7 @@ function buildPointDay(point, data, date) {
     available: dailyIndex >= 0 && hourly.length > 0,
     tempMin: valueAt(data.daily?.temperature_2m_min, dailyIndex),
     tempMax: valueAt(data.daily?.temperature_2m_max, dailyIndex),
-    precipitationSum: valueAt(data.daily?.precipitation_sum, dailyIndex),
+    precipitationSum: significantPrecipitationSum(hourly),
     rainSum: valueAt(data.daily?.rain_sum, dailyIndex),
     windMax: valueAt(data.daily?.wind_speed_10m_max, dailyIndex),
     gustMax: valueAt(data.daily?.wind_gusts_10m_max, dailyIndex),
@@ -258,7 +259,7 @@ function renderCard(card) {
       <span class="timeline-point"><span class="place">${card.point.name}</span></span>
       ${metric("Temperatura", `${fmt(card.tempMin)}–${fmt(card.tempMax)} °C`)}
       ${metric("Wiatr", windSummary(card))}
-      ${metric("Opady", rainSummary(card), "rain")}
+      ${metric("Opady", rainSummary(card), `rain ${rainStatus(card).level}`)}
       ${alertsHtml(card)}
     </summary>
     ${card.hourly.length ? `
@@ -313,8 +314,10 @@ function riskLevel(card) {
 
 function alertsForCard(card) {
   const alerts = [];
-  if ((card.maxHourlyRain || 0) >= 3) alerts.push({ level: "danger", text: `mocny opad do ${fmt(card.maxHourlyRain)} mm/h` });
-  else if ((card.maxHourlyRain || 0) >= 1) alerts.push({ level: "warning", text: `opad do ${fmt(card.maxHourlyRain)} mm/h` });
+  if ((card.maxHourlyRain || 0) > 5) alerts.push({ level: "danger", text: `ulewa do ${fmt(card.maxHourlyRain)} mm/h` });
+  else if ((card.maxHourlyRain || 0) > 3) alerts.push({ level: "danger", text: `mocny deszcz do ${fmt(card.maxHourlyRain)} mm/h` });
+  else if ((card.maxHourlyRain || 0) > 1.5) alerts.push({ level: "warning", text: `deszcz do ${fmt(card.maxHourlyRain)} mm/h` });
+  else if ((card.maxHourlyRain || 0) >= 0.6) alerts.push({ level: "warning", text: `lekki deszcz do ${fmt(card.maxHourlyRain)} mm/h` });
 
   if ((card.gustMax || 0) >= 55) alerts.push({ level: "danger", text: `porywy ${fmt(card.gustMax)} km/h` });
   else if ((card.gustMax || 0) >= 40) alerts.push({ level: "warning", text: `porywy ${fmt(card.gustMax)} km/h` });
@@ -334,9 +337,24 @@ function metric(title, value, className = "") {
 }
 
 function rainSummary(card) {
-  if ((card.precipitationSum || 0) <= 0 && card.rainPeriods.length === 0) return "brak";
+  const status = rainStatus(card);
+  if (status.level === "dry") return "brak / śladowy";
   const periods = card.rainPeriods.length ? card.rainPeriods.join(", ") : "bez godzin";
-  return `${fmt(card.precipitationSum)} mm, ${periods}`;
+  return `${status.label}: ${fmt(card.precipitationSum)} mm, max ${fmt(card.maxHourlyRain)} mm/h, ${periods}`;
+}
+
+function rainStatus(card) {
+  const max = card.maxHourlyRain || 0;
+  if (max <= 0.1) return { level: "dry", label: "brak" };
+  if (max <= 0.5) return { level: "drizzle", label: "mżawka" };
+  if (max <= 1.5) return { level: "light-rain", label: "lekki deszcz" };
+  if (max <= 3) return { level: "rain", label: "deszcz" };
+  if (max <= 5) return { level: "heavy-rain", label: "mocny deszcz" };
+  return { level: "downpour", label: "ulewa" };
+}
+
+function significantPrecipitationSum(hourly) {
+  return hourly.reduce((sum, hour) => sum + ((hour.precipitation || 0) >= 0.2 ? hour.precipitation : 0), 0);
 }
 
 function rainPeriods(hourly) {
@@ -345,7 +363,7 @@ function rainPeriods(hourly) {
   let end = null;
 
   hourly.forEach((hour) => {
-    if ((hour.precipitation || 0) > 0) {
+    if ((hour.precipitation || 0) >= 0.2) {
       start ||= hour.time;
       end = hour.time;
     } else if (start) {

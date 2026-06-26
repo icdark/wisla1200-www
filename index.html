@@ -12,6 +12,7 @@
     <nav class="tabs nav nav-pills mb-3" aria-label="Widoki">
       <button id="weatherTab" class="nav-link active" type="button" data-tab="weather">Pogoda</button>
       <button id="shopsTab" class="nav-link" type="button" data-tab="shops">Sklepy</button>
+      <button id="mapTab" class="nav-link" type="button" data-tab="map">Mapa</button>
     </nav>
 
     <section id="weatherPanel" class="tab-panel active">
@@ -36,6 +37,12 @@
           <h1 class="h5 mb-3">Sklepy na trasie</h1>
           <div id="shopsList" class="shops-list"></div>
         </div>
+      </div>
+    </section>
+
+    <section id="mapPanel" class="tab-panel">
+      <div class="map-embed card shadow-sm">
+        <iframe src="https://www.google.com/maps/d/embed?mid=1O7jKSYPGakRe2wXLuPrST2b-UFxAdsE&hl=en&ehbc=2E312F" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </section>
   </main>
