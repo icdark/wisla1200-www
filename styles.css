@@ -145,7 +145,7 @@ label { font-weight: 700; }
 
 .card summary {
   display: grid;
-  grid-template-columns: minmax(170px, 1.2fr) repeat(4, minmax(110px, 1fr));
+  grid-template-columns: minmax(170px, 1.2fr) repeat(5, minmax(105px, 1fr));
   gap: 12px;
   align-items: center;
   padding: 16px;
@@ -362,6 +362,32 @@ label { font-weight: 700; }
 .ride-checkpoint span {
   color: var(--muted);
   font-size: 13px;
+}
+
+.mud-alert {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 12px !important;
+  font-weight: 800;
+  color: #78350f !important;
+  background: #fef3c7;
+}
+
+.mud-alert.info {
+  color: #57534e !important;
+  background: #f5f5f4;
+}
+
+.mud-alert.warning {
+  color: #92400e !important;
+  background: #fed7aa;
+}
+
+.mud-alert.danger {
+  color: #991b1b !important;
+  background: #fecaca;
 }
 
 .shops-list {

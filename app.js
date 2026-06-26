@@ -12,15 +12,16 @@ const API_START = maxIsoDate(START, TODAY);
 const API_END = minIsoDate(END, addDaysIso(now(), 15));
 const CACHE_TTL_MS = 60 * 60 * 1000;
 const RIDE_SETTINGS_KEY = "wisla1200-ride-settings";
+const RIDE_SETTINGS_VERSION = 2;
 
 const routePoints = [
   { name: "Wisła", km: 0, lat: 49.6540, lon: 18.8591 },
   { name: "Skoczów", km: 43, lat: 49.801289, lon: 18.793263 },
-  { name: "Wały Goczały", km: 62, lat: 49.913929, lon: 18.791301 },
-  { name: "Bobrowisko", km: 81, lat: 49.912525, lon: 18.890428 },
+  { name: "Wały Goczały", km: 62, lat: 49.913929, lon: 18.791301, mudRisk: true },
+  { name: "Bobrowisko", km: 81, lat: 49.912525, lon: 18.890428, mudRisk: true },
   { name: "Oświęcim", km: 121, lat: 50.0344, lon: 19.2104 },
   { name: "Dół", km: 161, lat: 50.018064, lon: 19.556755 },
-  { name: "Kopiec Piłsudskiego", km: 199, lat: 50.059476, lon: 19.845371 },
+  { name: "Kopiec Piłsudskiego", km: 199, lat: 50.059476, lon: 19.845371, mudRisk: true },
   { name: "Kraków Rynek", km: 208, lat: 50.061453, lon: 19.935957 },
   { name: "Zwał jak zwał", km: 234, lat: 50.045930, lon: 20.180389 },
   { name: "Uście Solne", km: 268, lat: 50.118818, lon: 20.511863 },
@@ -29,27 +30,28 @@ const routePoints = [
   { name: "Szczucin", km: 357, lat: 50.314120, lon: 21.062362 },
   { name: "Przewłoka", km: 417, lat: 50.539114, lon: 21.609319 },
   { name: "Sandomierz", km: 437, lat: 50.6827, lon: 21.7489 },
-  { name: "Góry Pieprzowe", km: 441, lat: 50.684609, lon: 21.785722 },
+  { name: "Góry Pieprzowe", km: 441, lat: 50.684609, lon: 21.785722, mudRisk: true },
   { name: "Józefów nad Wisłą", km: 490, lat: 51.039959, lon: 21.830988 },
   { name: "Kazimierz Dolny", km: 528, lat: 51.3223, lon: 21.9476 },
   { name: "Angielskie Schody", km: 545, lat: 51.413098, lon: 21.958284 },
   { name: "Dęblin", km: 566, lat: 51.5591, lon: 21.8483 },
   { name: "Bączki", km: 615, lat: 51.766246, lon: 21.451744 },
-  { name: "Otwocka Amazonia", km: 670, lat: 52.115526, lon: 21.204167 },
+  { name: "Otwocka Amazonia", km: 670, lat: 52.115526, lon: 21.204167, mudRisk: true },
   { name: "Warszawa", km: 680, lat: 52.2297, lon: 21.0122 },
-  { name: "Zakroczymska Sawanna", km: 735, lat: 52.423350, lon: 20.612402 },
+  { name: "Zakroczymska Sawanna", km: 735, lat: 52.423350, lon: 20.612402, mudRisk: true },
   { name: "Pit Stop Podgórze", km: 783, lat: 52.412870, lon: 20.012936 },
   { name: "Płock", km: 816, lat: 52.5468, lon: 19.7064 },
-  { name: "Mostek p. Czesława", km: 844, lat: 52.634442, lon: 19.373602 },
+  { name: "Mostek p. Czesława", km: 844, lat: 52.634442, lon: 19.373602, mudRisk: true },
   { name: "Włocławek", km: 870, lat: 52.6483, lon: 19.0677 },
   { name: "Toruń", km: 925, lat: 53.0138, lon: 18.5984 },
+  { name: "Toruń Wały", km: 950, lat: 53.055451, lon: 18.391703 },
   { name: "Chełmno", km: 1003, lat: 53.347601, lon: 18.417243 },
   { name: "Grudziądz", km: 1030, lat: 53.4837, lon: 18.7536 },
-  { name: "Nowe Dżungla", km: 1056, lat: 53.649629, lon: 18.737698 },
-  { name: "Małe Wiosło", km: 1066, lat: 53.735980, lon: 18.805123 },
+  { name: "Nowe Dżungla", km: 1056, lat: 53.649629, lon: 18.737698, mudRisk: true },
+  { name: "Małe Wiosło", km: 1066, lat: 53.735980, lon: 18.805123, mudRisk: true },
   { name: "Gniew", km: 1084, lat: 53.831987, lon: 18.822523 },
   { name: "Tczew", km: 1116, lat: 54.0924, lon: 18.7779 },
-  { name: "Tczewskie Łąki", km: 1129, lat: 54.209438, lon: 18.865633 },
+  { name: "Tczewskie Łąki", km: 1129, lat: 54.209438, lon: 18.865633, mudRisk: true },
   { name: "Ujście Wisły", km: 1153, lat: 54.358470, lon: 18.946423 },
   { name: "Gdańsk", km: 1178, lat: 54.3520, lon: 18.6466 }
 ];
@@ -212,6 +214,7 @@ function saveRideSettings() {
       rideStartTime: rideStartTimeInput.value,
       defaultRideStart: defaultRideStartInput.value,
       defaultRideEnd: defaultRideEndInput.value,
+      version: RIDE_SETTINGS_VERSION,
       individualRideTimes: individualRideTimesInput.checked,
       days
     }));
@@ -227,6 +230,7 @@ function restoreRideSettings() {
     if (settings.currentKm !== undefined) currentKmInput.value = settings.currentKm;
     if (settings.grossSpeed !== undefined) grossSpeedInput.value = settings.grossSpeed;
     if (settings.rideStartTime !== undefined) rideStartTimeInput.value = settings.rideStartTime;
+    if (!settings.version && settings.rideStartTime === "04:00") rideStartTimeInput.value = "07:20";
     if (settings.defaultRideStart !== undefined) defaultRideStartInput.value = settings.defaultRideStart;
     if (settings.defaultRideEnd !== undefined) defaultRideEndInput.value = settings.defaultRideEnd;
     individualRideTimesInput.checked = Boolean(settings.individualRideTimes);
@@ -400,10 +404,12 @@ function renderRideRow(row) {
 
 function renderRideCheckpoint(checkpoint) {
   const weather = checkpoint.weather;
+  const mud = mudAlert(checkpoint.point, weather);
   const weatherHtml = weather ? `
     <span>${fmt(weather.temperature)}°C</span>
-    <span>wiatr ${fmt(weather.windSpeed)} km/h (${fmt(weather.windGusts)})</span>
+    <span>wiatr ${fmt(weather.windSpeed)} km/h (${fmt(weather.windGusts)}) · ${weather.relativeWind}</span>
     <span class="rain ${rainStatus({ maxHourlyRain: weather.precipitation, precipitationSum: weather.precipitation, rainPeriods: [] }).level}">${rainHourLabel(weather.precipitation)}</span>
+    ${mud ? `<span class="mud-alert ${mud.level}">${mud.text}</span>` : ""}
   ` : `<span class="warning">pogoda niedostępna</span>`;
 
   return `
@@ -428,31 +434,56 @@ function rideCheckpoints(startKm, endKm, startTime, speed, date, dayForecasts) {
     .map((point) => {
       const time = addHoursToTime(startTime, (point.km - startKm) / speed);
       const forecast = dayForecasts?.find((item) => item.point.name === point.name);
-      return { point, time, weather: forecast ? weatherAroundTime(forecast.data, date, time) : null };
+      return { point, time, weather: forecast ? weatherAroundTime(forecast.data, date, time, point) : null };
     });
 }
 
-function weatherAroundTime(data, date, time) {
+function weatherAroundTime(data, date, time, point) {
   const target = timeToMinutes(time);
   const hours = [];
   data.hourly?.time?.forEach((hourTime, index) => {
     if (hourTime.slice(0, 10) !== date) return;
     const minutes = timeToMinutes(hourTime.slice(11, 16));
-    if (Math.abs(minutes - target) > 60) return;
+    if (Math.abs(minutes - target) > 180) return;
     hours.push({
+      minutes,
       temperature: data.hourly.temperature_2m[index],
       precipitation: data.hourly.precipitation[index],
       windSpeed: data.hourly.wind_speed_10m[index],
-      windGusts: data.hourly.wind_gusts_10m[index]
+      windGusts: data.hourly.wind_gusts_10m[index],
+      windDirection: data.hourly.wind_direction_10m[index]
     });
   });
   if (!hours.length) return null;
   return {
-    temperature: average(hours.map((hour) => hour.temperature)),
-    precipitation: Math.max(0, ...hours.map((hour) => hour.precipitation || 0)),
-    windSpeed: Math.max(0, ...hours.map((hour) => hour.windSpeed || 0)),
-    windGusts: Math.max(0, ...hours.map((hour) => hour.windGusts || 0))
+    temperature: average(hours.filter((hour) => Math.abs(hour.minutes - target) <= 60).map((hour) => hour.temperature)),
+    precipitation: Math.max(0, ...hours.filter((hour) => Math.abs(hour.minutes - target) <= 60).map((hour) => hour.precipitation || 0)),
+    mudWindowPrecipitation: Math.max(0, ...hours.map((hour) => hour.precipitation || 0)),
+    dailyPrecipitation: significantPrecipitationSum(dayHours(data, date)),
+    windSpeed: Math.max(0, ...hours.filter((hour) => Math.abs(hour.minutes - target) <= 60).map((hour) => hour.windSpeed || 0)),
+    windGusts: Math.max(0, ...hours.filter((hour) => Math.abs(hour.minutes - target) <= 60).map((hour) => hour.windGusts || 0)),
+    relativeWind: relativeWind(average(hours.filter((hour) => Math.abs(hour.minutes - target) <= 60).map((hour) => hour.windDirection)), travelDirection(point))
   };
+}
+
+function dayHours(data, date) {
+  const hours = [];
+  data.hourly?.time?.forEach((time, index) => {
+    if (time.slice(0, 10) !== date) return;
+    hours.push({ precipitation: data.hourly.precipitation[index] });
+  });
+  return hours;
+}
+
+function mudAlert(point, weather) {
+  if (!point.mudRisk || !weather) return null;
+  const windowRain = weather.mudWindowPrecipitation || 0;
+  const dayRain = weather.dailyPrecipitation || 0;
+
+  if (windowRain >= 3.1 || dayRain >= 10) return { level: "danger", text: "🟤 bardzo błotnie" };
+  if (windowRain >= 1.6 || dayRain >= 5) return { level: "warning", text: "🟤 błoto prawdopodobne" };
+  if (windowRain >= 0.6 || dayRain >= 2) return { level: "possible", text: "🟤 możliwe błoto" };
+  return { level: "info", text: "odcinek błotny, sucho" };
 }
 
 function average(values) {
@@ -635,7 +666,8 @@ function buildPointDay(point, data, date) {
       precipitationProbability: data.hourly.precipitation_probability[index],
       windSpeed: data.hourly.wind_speed_10m[index],
       windGusts: data.hourly.wind_gusts_10m[index],
-      windDirection: data.hourly.wind_direction_10m[index]
+      windDirection: data.hourly.wind_direction_10m[index],
+      travelDirection: travelDirection(point)
     });
   });
 
@@ -648,6 +680,8 @@ function buildPointDay(point, data, date) {
     rainSum: valueAt(data.daily?.rain_sum, dailyIndex),
     windMax: valueAt(data.daily?.wind_speed_10m_max, dailyIndex),
     gustMax: valueAt(data.daily?.wind_gusts_10m_max, dailyIndex),
+    travelDirection: travelDirection(point),
+    relativeWind: relativeWindForDay(hourly),
     rainPeriods: rainPeriods(hourly),
     maxHourlyRain: Math.max(0, ...hourly.map((h) => h.precipitation || 0)),
     hourly
@@ -669,6 +703,7 @@ function renderCard(card) {
       <span class="timeline-point"><span class="place">${card.point.name}</span></span>
       ${metric("Temperatura", `${fmt(card.tempMin)}–${fmt(card.tempMax)} °C`)}
       ${metric("Wiatr", windSummary(card))}
+      ${metric("Wiatr vs jazda", card.relativeWind)}
       ${metric("Opady", rainSummary(card), `rain ${rainStatus(card).level}`)}
       ${alertsHtml(card)}
     </summary>
@@ -676,7 +711,7 @@ function renderCard(card) {
       <div class="hourly-wrap">
         <table class="hourly">
           <thead>
-            <tr><th>Godzina</th><th>Temp.</th><th>Wiatr</th><th>Kierunek</th><th>Opad</th><th>Szansa</th></tr>
+            <tr><th>Godzina</th><th>Temp.</th><th>Wiatr</th><th>Wiatr</th><th>Jazda</th><th>Opad</th><th>Szansa</th></tr>
           </thead>
           <tbody>
             ${card.hourly.map(renderHour).join("")}
@@ -695,7 +730,8 @@ function renderHour(hour) {
       <td>${hour.time}</td>
       <td>${fmt(hour.temperature)} °C</td>
       <td>${fmt(hour.windSpeed)} km/h (${fmt(hour.windGusts)})</td>
-      <td>${degToCompass(hour.windDirection)}</td>
+      <td>${degToCompass(hour.windDirection)} · ${relativeWind(hour.windDirection, hour.travelDirection)}</td>
+      <td>${degToCompass(hour.travelDirection)}</td>
       <td>${fmt(hour.precipitation)} mm</td>
       <td>${fmt(hour.precipitationProbability)}%</td>
     </tr>
@@ -705,6 +741,49 @@ function renderHour(hour) {
 function windSummary(card) {
   if (card.gustMax === null || card.gustMax === undefined) return `${fmt(card.windMax)} km/h`;
   return `${fmt(card.windMax)} km/h (${fmt(card.gustMax)})`;
+}
+
+function travelDirection(point) {
+  const index = routePoints.findIndex((routePoint) => routePoint.name === point.name);
+  const next = routePoints[index + 1] || routePoints[index];
+  const previous = routePoints[index - 1] || routePoints[index];
+  return bearing(previous, next);
+}
+
+function bearing(from, to) {
+  const lat1 = toRad(from.lat);
+  const lat2 = toRad(to.lat);
+  const dLon = toRad(to.lon - from.lon);
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function relativeWindForDay(hourly) {
+  const strongest = hourly.reduce((best, hour) => (hour.windSpeed || 0) > (best?.windSpeed || 0) ? hour : best, null);
+  return strongest ? relativeWind(strongest.windDirection, strongest.travelDirection) : "—";
+}
+
+function relativeWind(windFrom, travelBearing) {
+  if (windFrom === null || windFrom === undefined || travelBearing === null || travelBearing === undefined) return "—";
+  const windTo = (Number(windFrom) + 180) % 360;
+  const diff = angleDiff(windTo, travelBearing);
+  if (diff <= 45) return "w plecy";
+  if (diff >= 135) return "w ryj";
+  return "boczny";
+}
+
+function angleDiff(first, second) {
+  const diff = Math.abs(((first - second + 540) % 360) - 180);
+  return diff;
+}
+
+function toRad(deg) {
+  return deg * Math.PI / 180;
+}
+
+function toDeg(rad) {
+  return rad * 180 / Math.PI;
 }
 
 function conditionLabel(card) {
