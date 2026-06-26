@@ -92,6 +92,8 @@ const rideStartTimeInput = document.querySelector("#rideStartTime");
 const defaultRideStartInput = document.querySelector("#defaultRideStart");
 const defaultRideEndInput = document.querySelector("#defaultRideEnd");
 const individualRideTimesInput = document.querySelector("#individualRideTimes");
+const rideSettingsEl = document.querySelector("#rideSettings");
+const toggleRideSettingsButton = document.querySelector("#toggleRideSettings");
 const rideDaysEl = document.querySelector("#rideDays");
 const calculateRideButton = document.querySelector("#calculateRide");
 const clearRideSettingsButton = document.querySelector("#clearRideSettings");
@@ -114,6 +116,7 @@ function init() {
   clearCacheButton.addEventListener("click", clearWeatherCache);
   calculateRideButton.addEventListener("click", calculateRidePlan);
   clearRideSettingsButton.addEventListener("click", clearRideSettings);
+  toggleRideSettingsButton.addEventListener("click", toggleRideSettings);
   [currentKmInput, grossSpeedInput, defaultRideStartInput, defaultRideEndInput].forEach((input) => input.addEventListener("input", saveRideSettingsAndScheduleCalculation));
   rideStartTimeInput.addEventListener("input", () => {
     syncFirstRideDayStart();
@@ -171,6 +174,17 @@ function renderRideInputs() {
   `).join("");
 }
 
+function toggleRideSettings() {
+  const collapsed = !rideSettingsEl.classList.contains("collapsed");
+  setRideSettingsCollapsed(collapsed);
+  saveRideSettings();
+}
+
+function setRideSettingsCollapsed(collapsed) {
+  rideSettingsEl.classList.toggle("collapsed", collapsed);
+  toggleRideSettingsButton.textContent = collapsed ? "Pokaż ustawienia" : "Zwiń ustawienia";
+}
+
 function clearRideSettings() {
   if (!window.confirm("Wyczyścić ustawienia przejazdu?")) return;
   localStorage.removeItem(RIDE_SETTINGS_KEY);
@@ -181,6 +195,7 @@ function clearRideSettings() {
   defaultRideEndInput.value = "22:00";
   individualRideTimesInput.checked = false;
   rideResultEl.innerHTML = "";
+  setRideSettingsCollapsed(false);
   renderRideInputs();
   rideDaysEl.classList.remove("active");
 }
@@ -217,6 +232,7 @@ function saveRideSettings() {
       defaultRideEnd: defaultRideEndInput.value,
       version: RIDE_SETTINGS_VERSION,
       individualRideTimes: individualRideTimesInput.checked,
+      rideSettingsCollapsed: rideSettingsEl.classList.contains("collapsed"),
       days
     }));
   } catch (_error) {
@@ -236,6 +252,7 @@ function restoreRideSettings() {
     if (settings.defaultRideEnd !== undefined) defaultRideEndInput.value = settings.defaultRideEnd;
     individualRideTimesInput.checked = Boolean(settings.individualRideTimes);
     rideDaysEl.classList.toggle("active", individualRideTimesInput.checked);
+    setRideSettingsCollapsed(Boolean(settings.rideSettingsCollapsed));
     settings.days?.forEach((savedDay) => {
       const day = rideDaysEl.querySelector(`.ride-day[data-date="${savedDay.date}"]`);
       if (!day) return;
@@ -300,12 +317,41 @@ async function calculateRidePlan() {
     }
   }
 
-  const startInfo = `<div class="ride-summary"><strong>Start planu:</strong> ${formatDate(startContext.date)}, ${startContext.time}${startContext.dynamic ? " (teraz)" : ""}.</div>`;
   const lastRow = rows.at(-1);
   const summary = finish
-    ? `<div class="ride-summary ok"><strong>Finish:</strong> ${formatDate(finish.date)}, ${finish.time}. Czas brutto od startu 4.07: ${formatDuration(grossElapsedHours(finish.date, finish.time))}. Sama jazda od startu: ${formatDuration(1200 / speed)}. Przerwy od startu: ${formatDuration(breakHoursFromStart(finish.date, finish.time))}.</div>`
-    : `<div class="ride-summary warning"><strong>Nie dojeżdżasz do mety</strong> w podanych dniach. Czas brutto od startu 4.07: ${lastRow ? formatDuration(grossElapsedHours(lastRow.date, lastRow.arrivalTime)) : "—"}. Sama jazda od startu: ${lastRow ? formatDuration(lastRow.endKm / speed) : "—"}. Przerwy od startu: ${lastRow ? formatDuration(breakHoursFromStart(lastRow.date, lastRow.arrivalTime)) : "—"}.</div>`;
-  rideResultEl.innerHTML = startInfo + summary + rows.map(renderRideRow).join("");
+    ? renderRideSummary({
+        title: "META",
+        date: finish.date,
+        time: finish.time,
+        gross: grossElapsedHours(finish.date, finish.time),
+        ride: 1200 / speed,
+        breaks: breakHoursFromStart(finish.date, finish.time),
+        ok: true
+      })
+    : renderRideSummary({
+        title: "NIE DOJEŻDŻASZ",
+        date: lastRow?.date,
+        time: lastRow?.arrivalTime,
+        gross: lastRow ? grossElapsedHours(lastRow.date, lastRow.arrivalTime) : null,
+        ride: lastRow ? lastRow.endKm / speed : null,
+        breaks: lastRow ? breakHoursFromStart(lastRow.date, lastRow.arrivalTime) : null,
+        ok: false
+      });
+  rideResultEl.innerHTML = summary + rows.map(renderRideRow).join("");
+}
+
+function renderRideSummary(summary) {
+  return `
+    <section class="ride-summary-card ${summary.ok ? "ok" : "warning"}">
+      <div class="ride-summary-title">${summary.title}</div>
+      <div class="ride-summary-date">${summary.date ? `${formatLongDate(summary.date)} · ${summary.time}` : "—"}</div>
+      <div class="ride-summary-metrics">
+        <div><span>Czas brutto</span><strong>${summary.gross === null ? "—" : formatDuration(summary.gross)}</strong></div>
+        <div><span>Sama jazda</span><strong>${summary.ride === null ? "—" : formatDuration(summary.ride)}</strong></div>
+        <div><span>Przerwy</span><strong>${summary.breaks === null ? "—" : formatDuration(summary.breaks)}</strong></div>
+      </div>
+    </section>
+  `;
 }
 
 function grossElapsedHours(date, time) {
@@ -408,7 +454,7 @@ function renderRideCheckpoint(checkpoint) {
   const mud = mudAlert(checkpoint.point, weather);
   const weatherHtml = weather ? `
     <span>${fmt(weather.temperature)}°C</span>
-    <span>wiatr ${fmt(weather.windSpeed)} km/h (${fmt(weather.windGusts)}) · ${weather.relativeWind}</span>
+    <span>wiatr ${fmt(weather.windSpeed)} km/h (${fmt(weather.windGusts)}) · ${relativeWindBadge(weather.relativeWind)}</span>
     <span class="rain ${rainStatus({ maxHourlyRain: weather.precipitation, precipitationSum: weather.precipitation, rainPeriods: [] }).level}">${rainHourLabel(weather.precipitation)}</span>
     ${mud ? `<span class="mud-alert ${mud.level}">${mud.text}</span>` : ""}
   ` : `<span class="warning">pogoda niedostępna</span>`;
@@ -416,7 +462,7 @@ function renderRideCheckpoint(checkpoint) {
   return `
     <div class="ride-checkpoint">
       <div><strong>${checkpoint.time}</strong><span>${checkpoint.point.km} km</span></div>
-      <div><strong>${checkpoint.point.name}</strong><span>pogoda ±1 h</span></div>
+      <div><strong>${checkpoint.point.name}</strong></div>
       <div class="ride-weather">${weatherHtml}</div>
     </div>
   `;
@@ -704,7 +750,7 @@ function renderCard(card) {
       <span class="timeline-point"><span class="place">${card.point.name}</span></span>
       ${metric("Temperatura", `${fmt(card.tempMin)}–${fmt(card.tempMax)} °C`)}
       ${metric("Wiatr", windSummary(card))}
-      ${metric("Wiatr vs jazda", card.relativeWind)}
+      ${metric("Wiatr vs jazda", relativeWindBadge(card.relativeWind))}
       ${metric("Opady", rainSummary(card), `rain ${rainStatus(card).level}`)}
       ${alertsHtml(card)}
     </summary>
@@ -731,7 +777,7 @@ function renderHour(hour) {
       <td>${hour.time}</td>
       <td>${fmt(hour.temperature)} °C</td>
       <td>${fmt(hour.windSpeed)} km/h (${fmt(hour.windGusts)})</td>
-      <td>${degToCompass(hour.windDirection)} · ${relativeWind(hour.windDirection, hour.travelDirection)}</td>
+      <td>${degToCompass(hour.windDirection)} · ${relativeWindBadge(relativeWind(hour.windDirection, hour.travelDirection))}</td>
       <td>${degToCompass(hour.travelDirection)}</td>
       <td>${fmt(hour.precipitation)} mm</td>
       <td>${fmt(hour.precipitationProbability)}%</td>
@@ -758,6 +804,11 @@ function bearing(from, to) {
   const y = Math.sin(dLon) * Math.cos(lat2);
   const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
   return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function relativeWindBadge(value) {
+  const level = value === "w ryj" ? "head" : value === "w plecy" ? "tail" : value === "boczny" ? "side" : "";
+  return `<span class="relative-wind ${level}">${value}</span>`;
 }
 
 function relativeWindForDay(hourly) {
@@ -923,6 +974,14 @@ function fmt(value) {
 function formatDate(iso) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("pl-PL", {
     weekday: "short",
+    day: "numeric",
+    month: "numeric"
+  });
+}
+
+function formatLongDate(iso) {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("pl-PL", {
+    weekday: "long",
     day: "numeric",
     month: "numeric"
   });
