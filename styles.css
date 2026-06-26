@@ -243,6 +243,7 @@ label { font-weight: 700; }
 }
 
 .shops,
+.ride,
 .map-embed {
   border: 0;
   border-radius: 18px;
@@ -255,6 +256,112 @@ label { font-weight: 700; }
   height: min(72vh, 720px);
   min-height: 520px;
   border: 0;
+}
+
+.ride-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.ride-days {
+  display: none;
+  gap: 8px;
+}
+
+.ride-days.active {
+  display: grid;
+}
+
+.ride-day {
+  display: grid;
+  grid-template-columns: 1fr 130px 130px;
+  gap: 10px;
+  align-items: end;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.ride-day label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ride-result {
+  display: grid;
+  gap: 10px;
+}
+
+.ride-summary {
+  padding: 12px;
+  border-radius: 14px;
+  background: #ecfdf5;
+  font-weight: 700;
+}
+
+.ride-summary.warning {
+  background: #fffbeb;
+}
+
+.ride-row {
+  display: grid;
+  grid-template-columns: 1.2fr .7fr .7fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 .35rem 1rem rgba(15, 23, 42, .05);
+}
+
+.ride-row-main,
+.ride-weather {
+  display: grid;
+  gap: 3px;
+}
+
+.ride-checkpoints {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ride-checkpoint {
+  display: grid;
+  grid-template-columns: 90px minmax(150px, .8fr) 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.ride-checkpoint:last-child {
+  border-bottom: 0;
+}
+
+.ride-checkpoint:nth-child(even) {
+  background: #f8fafc;
+}
+
+.ride-checkpoint-start,
+.ride-checkpoint-end {
+  background: #eff6ff !important;
+}
+
+.ride-checkpoint > div {
+  display: grid;
+  gap: 2px;
+}
+
+.ride-checkpoint span {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .shops-list {
@@ -487,6 +594,21 @@ label { font-weight: 700; }
   .map-embed iframe {
     height: calc(100vh - 94px);
     min-height: 420px;
+  }
+
+  .ride-controls,
+  .ride-day,
+  .ride-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ride-row {
+    gap: 8px;
+  }
+
+  .ride-checkpoint {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .shops-list {

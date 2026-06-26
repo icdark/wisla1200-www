@@ -12,6 +12,7 @@
     <nav class="tabs nav nav-pills mb-3" aria-label="Widoki">
       <button id="weatherTab" class="nav-link active" type="button" data-tab="weather">Pogoda</button>
       <button id="shopsTab" class="nav-link" type="button" data-tab="shops">Sklepy</button>
+      <button id="rideTab" class="nav-link" type="button" data-tab="ride">Przejazd</button>
       <button id="mapTab" class="nav-link" type="button" data-tab="map">Mapa</button>
     </nav>
 
@@ -36,6 +37,46 @@
         <div class="card-body">
           <h1 class="h5 mb-3">Sklepy na trasie</h1>
           <div id="shopsList" class="shops-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ridePanel" class="tab-panel">
+      <div class="ride card shadow-sm">
+        <div class="card-body">
+          <h1 class="h5 mb-3">Plan przejazdu</h1>
+          <div class="ride-controls">
+            <div>
+              <label for="currentKm" class="form-label">Aktualny km</label>
+              <input id="currentKm" class="form-control" type="number" min="0" max="1200" step="1" value="0">
+            </div>
+            <div>
+              <label for="grossSpeed" class="form-label">Średnia brutto km/h</label>
+              <input id="grossSpeed" class="form-control" type="number" min="1" step="0.5" value="16">
+            </div>
+            <div>
+              <label for="rideStartTime" class="form-label">Pierwszy start</label>
+              <input id="rideStartTime" class="form-control" type="time" value="07:20">
+            </div>
+            <div>
+              <label for="defaultRideStart" class="form-label">Jazda od</label>
+              <input id="defaultRideStart" class="form-control" type="time" value="07:00">
+            </div>
+            <div>
+              <label for="defaultRideEnd" class="form-label">Jazda do</label>
+              <input id="defaultRideEnd" class="form-control" type="time" value="22:00">
+            </div>
+          </div>
+          <label class="form-check mt-3">
+            <input id="individualRideTimes" class="form-check-input" type="checkbox">
+            <span class="form-check-label">Indywidualne czasy dla dni</span>
+          </label>
+          <div id="rideDays" class="ride-days mt-3"></div>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button id="calculateRide" type="button" class="btn btn-primary">Przelicz</button>
+            <button id="clearRideSettings" type="button" class="btn btn-outline-secondary">Wyczyść</button>
+          </div>
+          <div id="rideResult" class="ride-result mt-3"></div>
         </div>
       </div>
     </section>

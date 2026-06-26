@@ -1,27 +1,56 @@
 const YEAR = 2026;
+// Do testów można ustawić np. new Date("2026-07-05T12:00:00").
+// Na produkcji zostawić null.
+const NOW_OVERRIDE = null; //new Date("2026-07-05T02:00:00");
 const START = `${YEAR}-07-04`;
 const END = `${YEAR}-07-11`;
 // Open-Meteo nie pozwala pytać o dni poza zakresem prognozy.
 // Zakres zwykle kończy się ok. 15 dni od dzisiaj, więc przycinamy zapytanie,
 // a brakujące dni pokazujemy jako niedostępne zamiast wywalać cały request.
-const API_END = minIsoDate(END, addDaysIso(new Date(), 15));
+const TODAY = toIsoDate(now());
+const API_START = maxIsoDate(START, TODAY);
+const API_END = minIsoDate(END, addDaysIso(now(), 15));
 const CACHE_TTL_MS = 60 * 60 * 1000;
+const RIDE_SETTINGS_KEY = "wisla1200-ride-settings";
 
 const routePoints = [
   { name: "Wisła", km: 0, lat: 49.6540, lon: 18.8591 },
+  { name: "Skoczów", km: 43, lat: 49.801289, lon: 18.793263 },
   { name: "Wały Goczały", km: 62, lat: 49.913929, lon: 18.791301 },
+  { name: "Bobrowisko", km: 81, lat: 49.912525, lon: 18.890428 },
   { name: "Oświęcim", km: 121, lat: 50.0344, lon: 19.2104 },
-  { name: "Kraków", km: 160, lat: 50.0647, lon: 19.9450 },
+  { name: "Dół", km: 161, lat: 50.018064, lon: 19.556755 },
+  { name: "Kopiec Piłsudskiego", km: 199, lat: 50.059476, lon: 19.845371 },
+  { name: "Kraków Rynek", km: 208, lat: 50.061453, lon: 19.935957 },
+  { name: "Zwał jak zwał", km: 234, lat: 50.045930, lon: 20.180389 },
+  { name: "Uście Solne", km: 268, lat: 50.118818, lon: 20.511863 },
   { name: "Opatowiec", km: 295, lat: 50.2436, lon: 20.7234 },
+  { name: "Malowana Wieś", km: 332, lat: 50.229941, lon: 20.860179 },
+  { name: "Szczucin", km: 357, lat: 50.314120, lon: 21.062362 },
+  { name: "Przewłoka", km: 417, lat: 50.539114, lon: 21.609319 },
   { name: "Sandomierz", km: 437, lat: 50.6827, lon: 21.7489 },
+  { name: "Góry Pieprzowe", km: 441, lat: 50.684609, lon: 21.785722 },
+  { name: "Józefów nad Wisłą", km: 490, lat: 51.039959, lon: 21.830988 },
   { name: "Kazimierz Dolny", km: 528, lat: 51.3223, lon: 21.9476 },
+  { name: "Angielskie Schody", km: 545, lat: 51.413098, lon: 21.958284 },
   { name: "Dęblin", km: 566, lat: 51.5591, lon: 21.8483 },
+  { name: "Bączki", km: 615, lat: 51.766246, lon: 21.451744 },
+  { name: "Otwocka Amazonia", km: 670, lat: 52.115526, lon: 21.204167 },
   { name: "Warszawa", km: 680, lat: 52.2297, lon: 21.0122 },
+  { name: "Zakroczymska Sawanna", km: 735, lat: 52.423350, lon: 20.612402 },
+  { name: "Pit Stop Podgórze", km: 783, lat: 52.412870, lon: 20.012936 },
   { name: "Płock", km: 816, lat: 52.5468, lon: 19.7064 },
+  { name: "Mostek p. Czesława", km: 844, lat: 52.634442, lon: 19.373602 },
   { name: "Włocławek", km: 870, lat: 52.6483, lon: 19.0677 },
   { name: "Toruń", km: 925, lat: 53.0138, lon: 18.5984 },
+  { name: "Chełmno", km: 1003, lat: 53.347601, lon: 18.417243 },
   { name: "Grudziądz", km: 1030, lat: 53.4837, lon: 18.7536 },
+  { name: "Nowe Dżungla", km: 1056, lat: 53.649629, lon: 18.737698 },
+  { name: "Małe Wiosło", km: 1066, lat: 53.735980, lon: 18.805123 },
+  { name: "Gniew", km: 1084, lat: 53.831987, lon: 18.822523 },
   { name: "Tczew", km: 1116, lat: 54.0924, lon: 18.7779 },
+  { name: "Tczewskie Łąki", km: 1129, lat: 54.209438, lon: 18.865633 },
+  { name: "Ujście Wisły", km: 1153, lat: 54.358470, lon: 18.946423 },
   { name: "Gdańsk", km: 1178, lat: 54.3520, lon: 18.6466 }
 ];
 
@@ -55,19 +84,44 @@ const clearCacheButton = document.querySelector("#clearCacheButton");
 const statusEl = document.querySelector("#status");
 const forecastEl = document.querySelector("#forecast");
 const shopsListEl = document.querySelector("#shopsList");
+const currentKmInput = document.querySelector("#currentKm");
+const grossSpeedInput = document.querySelector("#grossSpeed");
+const rideStartTimeInput = document.querySelector("#rideStartTime");
+const defaultRideStartInput = document.querySelector("#defaultRideStart");
+const defaultRideEndInput = document.querySelector("#defaultRideEnd");
+const individualRideTimesInput = document.querySelector("#individualRideTimes");
+const rideDaysEl = document.querySelector("#rideDays");
+const calculateRideButton = document.querySelector("#calculateRide");
+const clearRideSettingsButton = document.querySelector("#clearRideSettings");
+const rideResultEl = document.querySelector("#rideResult");
 let forecasts = [];
+let rideRecalculateTimer = null;
 
 init();
 
 function init() {
   initTabs();
   renderShops();
+  renderRideInputs();
+  restoreRideSettings();
   buildDateOptions();
   dateSelect.addEventListener("change", () => loadForecastsForDay(dateSelect.value));
   refreshButton.addEventListener("click", () => {
     if (dateSelect.value) loadForecastsForDay(dateSelect.value, { forceRefresh: true });
   });
   clearCacheButton.addEventListener("click", clearWeatherCache);
+  calculateRideButton.addEventListener("click", calculateRidePlan);
+  clearRideSettingsButton.addEventListener("click", clearRideSettings);
+  [currentKmInput, grossSpeedInput, defaultRideStartInput, defaultRideEndInput].forEach((input) => input.addEventListener("input", saveRideSettingsAndScheduleCalculation));
+  rideStartTimeInput.addEventListener("input", () => {
+    syncFirstRideDayStart();
+    saveRideSettingsAndScheduleCalculation();
+  });
+  individualRideTimesInput.addEventListener("change", () => {
+    rideDaysEl.classList.toggle("active", individualRideTimesInput.checked);
+    saveRideSettingsAndScheduleCalculation();
+  });
+  rideDaysEl.addEventListener("input", saveRideSettingsAndScheduleCalculation);
 
   const defaultDate = defaultSelectedDate();
   dateSelect.value = defaultDate;
@@ -81,7 +135,9 @@ function initTabs() {
       document.querySelectorAll("[data-tab]").forEach((item) => item.classList.toggle("active", item === button));
       document.querySelector("#weatherPanel").classList.toggle("active", tab === "weather");
       document.querySelector("#shopsPanel").classList.toggle("active", tab === "shops");
+      document.querySelector("#ridePanel").classList.toggle("active", tab === "ride");
       document.querySelector("#mapPanel").classList.toggle("active", tab === "map");
+      if (tab === "ride") scheduleRideCalculation();
     });
   });
 }
@@ -96,9 +152,363 @@ function renderShops() {
   `).join("");
 }
 
+function renderRideInputs() {
+  rideDaysEl.innerHTML = rideDates().map((date, index) => `
+    <div class="ride-day" data-date="${date}">
+      <strong>${formatDate(date)}</strong>
+      <label>
+        Od
+        <input class="form-control ride-start" type="time" value="${index === 0 ? (rideStartTimeInput?.value || "07:20") : "04:00"}">
+      </label>
+      <label>
+        Do
+        <input class="form-control ride-end" type="time" value="22:00">
+      </label>
+    </div>
+  `).join("");
+}
+
+function clearRideSettings() {
+  if (!window.confirm("Wyczyścić ustawienia przejazdu?")) return;
+  localStorage.removeItem(RIDE_SETTINGS_KEY);
+  currentKmInput.value = "0";
+  grossSpeedInput.value = "16";
+  rideStartTimeInput.value = "07:20";
+  defaultRideStartInput.value = "04:00";
+  defaultRideEndInput.value = "22:00";
+  individualRideTimesInput.checked = false;
+  rideResultEl.innerHTML = "";
+  renderRideInputs();
+  rideDaysEl.classList.remove("active");
+}
+
+function syncFirstRideDayStart() {
+  const firstDayStart = rideDaysEl.querySelector(`.ride-day[data-date="${START}"] .ride-start`);
+  if (firstDayStart) firstDayStart.value = rideStartTimeInput.value || "07:20";
+}
+
+function saveRideSettingsAndScheduleCalculation() {
+  saveRideSettings();
+  scheduleRideCalculation();
+}
+
+function scheduleRideCalculation() {
+  clearTimeout(rideRecalculateTimer);
+  rideRecalculateTimer = setTimeout(() => {
+    if (document.querySelector("#ridePanel").classList.contains("active")) calculateRidePlan();
+  }, 350);
+}
+
+function saveRideSettings() {
+  try {
+    const days = Array.from(rideDaysEl.querySelectorAll(".ride-day")).map((day) => ({
+      date: day.dataset.date,
+      start: day.querySelector(".ride-start").value,
+      end: day.querySelector(".ride-end").value
+    }));
+    localStorage.setItem(RIDE_SETTINGS_KEY, JSON.stringify({
+      currentKm: currentKmInput.value,
+      grossSpeed: grossSpeedInput.value,
+      rideStartTime: rideStartTimeInput.value,
+      defaultRideStart: defaultRideStartInput.value,
+      defaultRideEnd: defaultRideEndInput.value,
+      individualRideTimes: individualRideTimesInput.checked,
+      days
+    }));
+  } catch (_error) {
+    // Zapamiętywanie ustawień jest tylko wygodą.
+  }
+}
+
+function restoreRideSettings() {
+  try {
+    const settings = JSON.parse(localStorage.getItem(RIDE_SETTINGS_KEY) || "null");
+    if (!settings) return;
+    if (settings.currentKm !== undefined) currentKmInput.value = settings.currentKm;
+    if (settings.grossSpeed !== undefined) grossSpeedInput.value = settings.grossSpeed;
+    if (settings.rideStartTime !== undefined) rideStartTimeInput.value = settings.rideStartTime;
+    if (settings.defaultRideStart !== undefined) defaultRideStartInput.value = settings.defaultRideStart;
+    if (settings.defaultRideEnd !== undefined) defaultRideEndInput.value = settings.defaultRideEnd;
+    individualRideTimesInput.checked = Boolean(settings.individualRideTimes);
+    rideDaysEl.classList.toggle("active", individualRideTimesInput.checked);
+    settings.days?.forEach((savedDay) => {
+      const day = rideDaysEl.querySelector(`.ride-day[data-date="${savedDay.date}"]`);
+      if (!day) return;
+      if (savedDay.start) day.querySelector(".ride-start").value = savedDay.start;
+      if (savedDay.end) day.querySelector(".ride-end").value = savedDay.end;
+    });
+    syncFirstRideDayStart();
+  } catch (_error) {
+    // Jeśli localStorage zawiera stare lub uszkodzone dane, ignorujemy.
+  }
+}
+
+async function calculateRidePlan() {
+  clearTimeout(rideRecalculateTimer);
+  const speed = Number(grossSpeedInput.value);
+  let currentKm = Number(currentKmInput.value);
+  if (!Number.isFinite(speed) || speed <= 0) return;
+  if (!Number.isFinite(currentKm)) currentKm = 0;
+
+  syncFirstRideDayStart();
+  const startContext = rideStartContext();
+  const firstDayStart = rideDaysEl.querySelector(`.ride-day[data-date="${startContext.date}"] .ride-start`);
+  if (firstDayStart) firstDayStart.value = startContext.time;
+
+  rideResultEl.innerHTML = "Ładowanie pogody dla planu…";
+  const rows = [];
+  let totalHours = 0;
+  let totalBreakHours = 0;
+  let previousArrivalTime = null;
+  let finish = null;
+
+  for (const dayEl of rideDaysEl.querySelectorAll(".ride-day")) {
+    if (currentKm >= 1200) break;
+
+    const date = dayEl.dataset.date;
+    if (date < startContext.date) continue;
+    const individual = individualRideTimesInput.checked;
+    const plannedStart = rows.length === 0 ? startContext.time : (individual ? dayEl.querySelector(".ride-start").value : defaultRideStartInput.value);
+    const start = date === START ? maxTime(plannedStart, rideStartTimeInput.value || "07:20") : plannedStart;
+    const end = individual ? dayEl.querySelector(".ride-end").value : defaultRideEndInput.value;
+    if (previousArrivalTime) totalBreakHours += overnightBreakHours(previousArrivalTime, start);
+
+    const availableHours = rideHours(start, end);
+    const startKm = currentKm;
+    const remainingKm = 1200 - startKm;
+    const neededHours = remainingKm / speed;
+    const reachesFinish = neededHours <= availableHours;
+    const hours = reachesFinish ? neededHours : availableHours;
+    const endKm = reachesFinish ? 1200 : startKm + hours * speed;
+    const arrivalTime = reachesFinish ? addHoursToTime(start, neededHours) : end;
+    const dayForecasts = await forecastsForRideDate(date);
+    const checkpoints = rideCheckpoints(startKm, endKm, start, speed, date, dayForecasts);
+
+    totalHours += hours;
+    rows.push({ date, start, end, arrivalTime, hours, totalHours, startKm, endKm, checkpoints, reachesFinish });
+    currentKm = endKm;
+    previousArrivalTime = arrivalTime;
+
+    if (reachesFinish) {
+      finish = { date, time: arrivalTime, totalHours, totalBreakHours };
+      break;
+    }
+  }
+
+  const startInfo = `<div class="ride-summary"><strong>Start planu:</strong> ${formatDate(startContext.date)}, ${startContext.time}${startContext.dynamic ? " (teraz)" : ""}.</div>`;
+  const lastRow = rows.at(-1);
+  const summary = finish
+    ? `<div class="ride-summary ok"><strong>Finish:</strong> ${formatDate(finish.date)}, ${finish.time}. Czas brutto od startu 4.07: ${formatDuration(grossElapsedHours(finish.date, finish.time))}. Sama jazda od startu: ${formatDuration(1200 / speed)}. Przerwy od startu: ${formatDuration(breakHoursFromStart(finish.date, finish.time))}.</div>`
+    : `<div class="ride-summary warning"><strong>Nie dojeżdżasz do mety</strong> w podanych dniach. Czas brutto od startu 4.07: ${lastRow ? formatDuration(grossElapsedHours(lastRow.date, lastRow.arrivalTime)) : "—"}. Sama jazda od startu: ${lastRow ? formatDuration(lastRow.endKm / speed) : "—"}. Przerwy od startu: ${lastRow ? formatDuration(breakHoursFromStart(lastRow.date, lastRow.arrivalTime)) : "—"}.</div>`;
+  rideResultEl.innerHTML = startInfo + summary + rows.map(renderRideRow).join("");
+}
+
+function grossElapsedHours(date, time) {
+  const start = new Date(`${START}T${rideStartTimeInput.value || "07:20"}:00`);
+  const finish = new Date(`${date}T${time}:00`);
+  return Math.max(0, (finish - start) / 36e5);
+}
+
+function breakHoursFromStart(finishDate, finishTime) {
+  const days = Array.from(rideDaysEl.querySelectorAll(".ride-day"));
+  const individual = individualRideTimesInput.checked;
+  let breaks = 0;
+
+  for (let index = 0; index < days.length - 1; index += 1) {
+    const day = days[index];
+    const nextDay = days[index + 1];
+    const date = day.dataset.date;
+    const nextDate = nextDay.dataset.date;
+    if (date >= finishDate) break;
+
+    const dayEnd = individual ? day.querySelector(".ride-end").value : defaultRideEndInput.value;
+    const nextStart = nextDate === START
+      ? (rideStartTimeInput.value || "04:00")
+      : (individual ? nextDay.querySelector(".ride-start").value : defaultRideStartInput.value);
+
+    if (nextDate > finishDate || (nextDate === finishDate && timeToMinutes(nextStart) > timeToMinutes(finishTime))) {
+      breaks += Math.max(0, (new Date(`${finishDate}T${finishTime}:00`) - new Date(`${date}T${dayEnd}:00`)) / 36e5);
+      break;
+    }
+
+    breaks += Math.max(0, (new Date(`${nextDate}T${nextStart}:00`) - new Date(`${date}T${dayEnd}:00`)) / 36e5);
+  }
+
+  return breaks;
+}
+
+function rideStartContext() {
+  const current = now();
+  const today = toIsoDate(current);
+  if (today >= START && today <= END) {
+    const currentMinutes = current.getHours() * 60 + current.getMinutes();
+    const todayStart = rideWindowStart(today);
+    const todayEnd = rideWindowEnd(today);
+    const startMinutes = timeToMinutes(todayStart);
+    const endMinutes = timeToMinutes(todayEnd);
+
+    if (currentMinutes < startMinutes) return { date: today, time: todayStart, dynamic: true };
+    if (currentMinutes <= endMinutes) return { date: today, time: minutesToTime(currentMinutes), dynamic: true };
+
+    const nextDate = nextRideDate(today);
+    if (nextDate) return { date: nextDate, time: rideWindowStart(nextDate), dynamic: true };
+    return { date: today, time: todayEnd, dynamic: true };
+  }
+  return { date: START, time: rideStartTimeInput.value || "07:20", dynamic: false };
+}
+
+function rideWindowStart(date) {
+  if (date === START) return rideStartTimeInput.value || "07:20";
+  if (!individualRideTimesInput.checked) return defaultRideStartInput.value || "04:00";
+  return rideDaysEl.querySelector(`.ride-day[data-date="${date}"] .ride-start`)?.value || "04:00";
+}
+
+function rideWindowEnd(date) {
+  if (!individualRideTimesInput.checked) return defaultRideEndInput.value || "22:00";
+  return rideDaysEl.querySelector(`.ride-day[data-date="${date}"] .ride-end`)?.value || "22:00";
+}
+
+function nextRideDate(date) {
+  return rideDates().find((rideDate) => rideDate > date) || null;
+}
+
+function renderRideRow(row) {
+  return `
+    <article class="ride-row ride-day-row">
+      <div class="ride-row-main">
+        <strong>${formatDate(row.date)}</strong>
+        <span>${row.start}–${row.arrivalTime}, ${formatDuration(row.hours)}</span>
+      </div>
+      <div><span class="metric-title">Start</span><strong>${fmt(row.startKm)} km</strong></div>
+      <div><span class="metric-title">Koniec</span><strong>${fmt(row.endKm)} km</strong>${row.reachesFinish ? `<span class="ok d-block">meta ${row.arrivalTime}</span>` : ""}</div>
+      <div class="ride-checkpoints">
+        <div class="ride-checkpoint ride-checkpoint-start">
+          <div><strong>${row.start}</strong><span>start dnia</span></div>
+          <div><strong>${fmt(row.startKm)} km</strong><span>ruszasz</span></div>
+          <div></div>
+        </div>
+        ${row.checkpoints.length ? row.checkpoints.map(renderRideCheckpoint).join("") : `<span class="warning">Brak punktów trasy w tym odcinku.</span>`}
+        <div class="ride-checkpoint ride-checkpoint-end">
+          <div><strong>${row.arrivalTime}</strong><span>${row.reachesFinish ? "meta" : "koniec dnia"}</span></div>
+          <div><strong>${fmt(row.endKm)} km</strong><span>${row.reachesFinish ? "Gdańsk / meta" : "postój"}</span></div>
+          <div></div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderRideCheckpoint(checkpoint) {
+  const weather = checkpoint.weather;
+  const weatherHtml = weather ? `
+    <span>${fmt(weather.temperature)}°C</span>
+    <span>wiatr ${fmt(weather.windSpeed)} km/h (${fmt(weather.windGusts)})</span>
+    <span class="rain ${rainStatus({ maxHourlyRain: weather.precipitation, precipitationSum: weather.precipitation, rainPeriods: [] }).level}">${rainHourLabel(weather.precipitation)}</span>
+  ` : `<span class="warning">pogoda niedostępna</span>`;
+
+  return `
+    <div class="ride-checkpoint">
+      <div><strong>${checkpoint.time}</strong><span>${checkpoint.point.km} km</span></div>
+      <div><strong>${checkpoint.point.name}</strong><span>pogoda ±1 h</span></div>
+      <div class="ride-weather">${weatherHtml}</div>
+    </div>
+  `;
+}
+
+async function forecastsForRideDate(date) {
+  if (date < API_START || date > API_END) return null;
+  const cached = readCachedForecast(date) || await loadRouteForecast(date);
+  writeCachedForecast(date, cached);
+  return cached;
+}
+
+function rideCheckpoints(startKm, endKm, startTime, speed, date, dayForecasts) {
+  return routePoints
+    .filter((point) => point.km > startKm && point.km <= endKm)
+    .map((point) => {
+      const time = addHoursToTime(startTime, (point.km - startKm) / speed);
+      const forecast = dayForecasts?.find((item) => item.point.name === point.name);
+      return { point, time, weather: forecast ? weatherAroundTime(forecast.data, date, time) : null };
+    });
+}
+
+function weatherAroundTime(data, date, time) {
+  const target = timeToMinutes(time);
+  const hours = [];
+  data.hourly?.time?.forEach((hourTime, index) => {
+    if (hourTime.slice(0, 10) !== date) return;
+    const minutes = timeToMinutes(hourTime.slice(11, 16));
+    if (Math.abs(minutes - target) > 60) return;
+    hours.push({
+      temperature: data.hourly.temperature_2m[index],
+      precipitation: data.hourly.precipitation[index],
+      windSpeed: data.hourly.wind_speed_10m[index],
+      windGusts: data.hourly.wind_gusts_10m[index]
+    });
+  });
+  if (!hours.length) return null;
+  return {
+    temperature: average(hours.map((hour) => hour.temperature)),
+    precipitation: Math.max(0, ...hours.map((hour) => hour.precipitation || 0)),
+    windSpeed: Math.max(0, ...hours.map((hour) => hour.windSpeed || 0)),
+    windGusts: Math.max(0, ...hours.map((hour) => hour.windGusts || 0))
+  };
+}
+
+function average(values) {
+  const numbers = values.filter((value) => Number.isFinite(Number(value))).map(Number);
+  return numbers.length ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : null;
+}
+
+function rideHours(start, end) {
+  const startTotal = timeToMinutes(start);
+  let endTotal = timeToMinutes(end);
+  if (endTotal < startTotal) endTotal += 24 * 60;
+  return Math.max(0, (endTotal - startTotal) / 60);
+}
+
+function addHoursToTime(time, hours) {
+  const total = Math.round(timeToMinutes(time) + hours * 60) % (24 * 60);
+  return minutesToTime(total);
+}
+
+function overnightBreakHours(previousEnd, nextStart) {
+  return (24 * 60 - timeToMinutes(previousEnd) + timeToMinutes(nextStart)) / 60;
+}
+
+function maxTime(first, second) {
+  return timeToMinutes(first) >= timeToMinutes(second) ? first : second;
+}
+
+function timeToMinutes(time) {
+  const [hour, minute] = time.split(":").map(Number);
+  return hour * 60 + minute;
+}
+
+function minutesToTime(total) {
+  const hour = Math.floor(total / 60);
+  const minute = total % 60;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
+function formatDuration(hours) {
+  const minutes = Math.round(hours * 60);
+  return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+}
+
+function rideDates() {
+  const dates = [];
+  const start = new Date(`${START}T00:00:00`);
+  for (let i = 0; i < 8; i += 1) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    dates.push(toIsoDate(date));
+  }
+  return dates;
+}
+
 function defaultSelectedDate() {
-  const today = toIsoDate(new Date());
-  return today >= START && today <= END ? today : START;
+  return TODAY >= START && TODAY <= END ? TODAY : START;
 }
 
 function buildDateOptions() {
@@ -135,10 +545,10 @@ async function loadForecastsForDay(date, options = {}) {
     }
   }
 
-  if (date > API_END) {
+  if (date < API_START || date > API_END) {
     forecasts = [];
     statusEl.className = "status warning";
-    statusEl.textContent = "Prognoza dla tego dnia nie jest jeszcze dostępna w API.";
+    statusEl.textContent = date < API_START ? "Nie pobieram pogody dla dni starszych niż dzisiaj." : "Prognoza dla tego dnia nie jest jeszcze dostępna w API.";
     routePoints
       .map((point) => ({ point, available: false }))
       .forEach((card) => forecastEl.appendChild(renderCard(card)));
@@ -151,7 +561,7 @@ async function loadForecastsForDay(date, options = {}) {
     forecasts = await loadRouteForecast(date);
     writeCachedForecast(date, forecasts);
     renderSelectedDay();
-    statusEl.textContent = `Dane z Open-Meteo dla ${formatDate(date)}. Ostatnie odświeżenie: ${new Date().toLocaleString("pl-PL")}.`;
+    statusEl.textContent = `Dane z Open-Meteo dla ${formatDate(date)}. Ostatnie odświeżenie: ${now().toLocaleString("pl-PL")}.`;
   } catch (error) {
     console.error(error);
     statusEl.className = "status error";
@@ -343,6 +753,12 @@ function rainSummary(card) {
   return `${status.label}: ${fmt(card.precipitationSum)} mm, max ${fmt(card.maxHourlyRain)} mm/h, ${periods}`;
 }
 
+function rainHourLabel(mm) {
+  const status = rainStatus({ maxHourlyRain: mm || 0 });
+  if (status.level === "dry") return "brak / śladowy";
+  return `${status.label}, max ${fmt(mm)} mm/h`;
+}
+
 function rainStatus(card) {
   const max = card.maxHourlyRain || 0;
   if (max <= 0.1) return { level: "dry", label: "brak" };
@@ -432,6 +848,10 @@ function formatDate(iso) {
   });
 }
 
+function now() {
+  return NOW_OVERRIDE || new Date();
+}
+
 function toIsoDate(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -447,6 +867,10 @@ function addDaysIso(date, days) {
 
 function minIsoDate(first, second) {
   return first <= second ? first : second;
+}
+
+function maxIsoDate(first, second) {
+  return first >= second ? first : second;
 }
 
 function degToCompass(deg) {
