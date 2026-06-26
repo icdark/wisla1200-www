@@ -128,6 +128,7 @@ function init() {
   const defaultDate = defaultSelectedDate();
   dateSelect.value = defaultDate;
   loadForecastsForDay(defaultDate);
+  scheduleRideCalculation();
 }
 
 function initTabs() {
