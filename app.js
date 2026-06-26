@@ -44,7 +44,7 @@ const routePoints = [
   { name: "Mostek p. Czesława", km: 844, lat: 52.634442, lon: 19.373602, mudRisk: true },
   { name: "Włocławek", km: 870, lat: 52.6483, lon: 19.0677 },
   { name: "Toruń", km: 925, lat: 53.0138, lon: 18.5984 },
-  { name: "Toruń Wały", km: 950, lat: 53.055451, lon: 18.391703 },
+  { name: "Toruń Wały", km: 950, lat: 53.055451, lon: 18.391703, mudRisk: true },
   { name: "Chełmno", km: 1003, lat: 53.347601, lon: 18.417243 },
   { name: "Grudziądz", km: 1030, lat: 53.4837, lon: 18.7536 },
   { name: "Nowe Dżungla", km: 1056, lat: 53.649629, lon: 18.737698, mudRisk: true },
