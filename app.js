@@ -15,45 +15,45 @@ const RIDE_SETTINGS_KEY = "wisla1200-ride-settings";
 const RIDE_SETTINGS_VERSION = 2;
 
 const routePoints = [
-  { name: "Wisła", km: 0, lat: 49.6540, lon: 18.8591 },
-  { name: "Skoczów", km: 43, lat: 49.801289, lon: 18.793263 },
-  { name: "Wały Goczały", km: 62, lat: 49.913929, lon: 18.791301, mudRisk: true },
-  { name: "Bobrowisko", km: 81, lat: 49.912525, lon: 18.890428, mudRisk: true },
-  { name: "Oświęcim", km: 121, lat: 50.0344, lon: 19.2104 },
-  { name: "Dół", km: 161, lat: 50.018064, lon: 19.556755 },
-  { name: "Kopiec Piłsudskiego", km: 199, lat: 50.059476, lon: 19.845371, mudRisk: true },
-  { name: "Kraków Rynek", km: 208, lat: 50.061453, lon: 19.935957 },
-  { name: "Zwał jak zwał", km: 234, lat: 50.045930, lon: 20.180389 },
-  { name: "Uście Solne", km: 268, lat: 50.118818, lon: 20.511863 },
-  { name: "Opatowiec", km: 295, lat: 50.2436, lon: 20.7234 },
-  { name: "Malowana Wieś", km: 332, lat: 50.229941, lon: 20.860179 },
-  { name: "Szczucin", km: 357, lat: 50.314120, lon: 21.062362 },
-  { name: "Przewłoka", km: 417, lat: 50.539114, lon: 21.609319 },
-  { name: "Sandomierz", km: 437, lat: 50.6827, lon: 21.7489 },
-  { name: "Góry Pieprzowe", km: 441, lat: 50.684609, lon: 21.785722, mudRisk: true },
-  { name: "Józefów nad Wisłą", km: 490, lat: 51.039959, lon: 21.830988 },
-  { name: "Kazimierz Dolny", km: 528, lat: 51.3223, lon: 21.9476 },
-  { name: "Angielskie Schody", km: 545, lat: 51.413098, lon: 21.958284 },
-  { name: "Dęblin", km: 566, lat: 51.5591, lon: 21.8483 },
-  { name: "Bączki", km: 615, lat: 51.766246, lon: 21.451744 },
-  { name: "Otwocka Amazonia", km: 670, lat: 52.115526, lon: 21.204167, mudRisk: true },
-  { name: "Warszawa", km: 680, lat: 52.2297, lon: 21.0122 },
-  { name: "Zakroczymska Sawanna", km: 735, lat: 52.423350, lon: 20.612402, mudRisk: true },
-  { name: "Pit Stop Podgórze", km: 783, lat: 52.412870, lon: 20.012936 },
-  { name: "Płock", km: 816, lat: 52.5468, lon: 19.7064 },
-  { name: "Mostek p. Czesława", km: 844, lat: 52.634442, lon: 19.373602, mudRisk: true },
-  { name: "Włocławek", km: 870, lat: 52.6483, lon: 19.0677 },
-  { name: "Toruń", km: 925, lat: 53.0138, lon: 18.5984 },
-  { name: "Toruń Wały", km: 950, lat: 53.055451, lon: 18.391703, mudRisk: true },
-  { name: "Chełmno", km: 1003, lat: 53.347601, lon: 18.417243 },
-  { name: "Grudziądz", km: 1030, lat: 53.4837, lon: 18.7536 },
-  { name: "Nowe Dżungla", km: 1056, lat: 53.649629, lon: 18.737698, mudRisk: true },
-  { name: "Małe Wiosło", km: 1066, lat: 53.735980, lon: 18.805123, mudRisk: true },
-  { name: "Gniew", km: 1084, lat: 53.831987, lon: 18.822523 },
-  { name: "Tczew", km: 1116, lat: 54.0924, lon: 18.7779 },
-  { name: "Tczewskie Łąki", km: 1129, lat: 54.209438, lon: 18.865633, mudRisk: true },
-  { name: "Ujście Wisły", km: 1153, lat: 54.358470, lon: 18.946423 },
-  { name: "Gdańsk", km: 1178, lat: 54.3520, lon: 18.6466 }
+  { name: "Start", km: 0, lat: 49.596179, lon: 18.983949 },
+  { name: "Wisła", km: 13, lat: 49.6540, lon: 18.8591 },
+  { name: "Skoczów", km: 35, lat: 49.801289, lon: 18.793263 },
+  { name: "Wały Goczały", km: 54, lat: 49.913929, lon: 18.791301, mudRisk: true },
+  { name: "Bobrowisko", km: 66, lat: 49.912525, lon: 18.890428, mudRisk: true },
+  { name: "Oświęcim", km: 107, lat: 50.0344, lon: 19.2104 },
+  { name: "Dół", km: 148, lat: 50.018064, lon: 19.556755 },
+  { name: "Kopiec Piłsudskiego", km: 186, lat: 50.059476, lon: 19.845371, mudRisk: true },
+  { name: "Kraków Rynek", km: 194, lat: 50.061453, lon: 19.935957 },
+  { name: "Zwał jak zwał", km: 220, lat: 50.045930, lon: 20.180389 },
+  { name: "Uście Solne", km: 253, lat: 50.118818, lon: 20.511863 },
+  { name: "Opatowiec", km: 282, lat: 50.2436, lon: 20.7234 },
+  { name: "Malowana Wieś", km: 318, lat: 50.229941, lon: 20.860179 },
+  { name: "Szczucin", km: 344, lat: 50.314120, lon: 21.062362 },
+  { name: "Podwale", km: 383, lat: 50.457420, lon: 21.435123 },
+  { name: "Sandomierz", km: 424, lat: 50.6827, lon: 21.7489 },
+  { name: "Góry Pieprzowe", km: 427, lat: 50.684609, lon: 21.785722, mudRisk: true },
+  { name: "Józefów nad Wisłą", km: 476, lat: 51.039959, lon: 21.830988 },
+  { name: "Kazimierz Dolny", km: 514, lat: 51.3223, lon: 21.9476 },
+  { name: "Angielskie Schody", km: 531, lat: 51.413098, lon: 21.958284 },
+  { name: "Dęblin", km: 552, lat: 51.5591, lon: 21.8483 },
+  { name: "Bączki", km: 602, lat: 51.766246, lon: 21.451744 },
+  { name: "Otwocka Amazonia", km: 655, lat: 52.115526, lon: 21.204167, mudRisk: true },
+  { name: "Warszawa", km: 674, lat: 52.2297, lon: 21.0122 },
+  { name: "Zakroczymska Sawanna", km: 720, lat: 52.423350, lon: 20.612402, mudRisk: true },
+  { name: "Pit Stop Podgórze", km: 769, lat: 52.412870, lon: 20.012936 },
+  { name: "Płock", km: 803, lat: 52.5468, lon: 19.7064 },
+  { name: "Mostek p. Czesława", km: 829, lat: 52.634442, lon: 19.373602, mudRisk: true },
+  { name: "Włocławek", km: 856, lat: 52.6483, lon: 19.0677 },
+  { name: "Toruń", km: 915, lat: 53.0138, lon: 18.5984 },
+  { name: "Toruń Wały", km: 935, lat: 53.055451, lon: 18.391703, mudRisk: true },
+  { name: "Chełmno", km: 988, lat: 53.347601, lon: 18.417243 },
+  { name: "Grudziądz", km: 1021, lat: 53.4837, lon: 18.7536 },
+  { name: "Góry Łosiowe", km: 1030, lat: 53.555208, lon: 18.769240, mudRisk: true },
+  { name: "Gniew", km: 1073, lat: 53.831987, lon: 18.822523 },
+  { name: "Tczew", km: 1106, lat: 54.0924, lon: 18.7779 },
+  { name: "Tczewskie Łąki", km: 1113, lat: 54.209438, lon: 18.865633, mudRisk: true },
+  { name: "Ujście Wisły", km: 1142, lat: 54.358470, lon: 18.946423 },
+  { name: "Gdańsk", km: 1170, lat: 54.3520, lon: 18.6466 }
 ];
 
 const shops = [
@@ -305,9 +305,10 @@ async function calculateRidePlan() {
     const arrivalTime = reachesFinish ? addHoursToTime(start, neededHours) : end;
     const dayForecasts = await forecastsForRideDate(date);
     const checkpoints = rideCheckpoints(startKm, endKm, start, speed, date, dayForecasts);
+    const weatherSummary = rideDayWeatherSummary(checkpoints);
 
     totalHours += hours;
-    rows.push({ date, start, end, arrivalTime, hours, totalHours, startKm, endKm, checkpoints, reachesFinish });
+    rows.push({ date, start, end, arrivalTime, hours, totalHours, startKm, endKm, checkpoints, weatherSummary, reachesFinish });
     currentKm = endKm;
     previousArrivalTime = arrivalTime;
 
@@ -430,8 +431,12 @@ function renderRideRow(row) {
         <strong>${formatDate(row.date)}</strong>
         <span>${row.start}–${row.arrivalTime}, ${formatDuration(row.hours)}</span>
       </div>
-      <div><span class="metric-title">Start</span><strong>${fmt(row.startKm)} km</strong></div>
-      <div><span class="metric-title">Koniec</span><strong>${fmt(row.endKm)} km</strong>${row.reachesFinish ? `<span class="ok d-block">meta ${row.arrivalTime}</span>` : ""}</div>
+      <div class="ride-day-range">
+        <span><span class="metric-title">Start</span><strong>${fmt(row.startKm)} km</strong></span>
+        <span><span class="metric-title">Koniec</span><strong>${fmt(row.endKm)} km</strong>${row.reachesFinish ? `<span class="ok d-block">meta ${row.arrivalTime}</span>` : ""}</span>
+        <span><span class="metric-title">Odległość</span><strong>${fmt(row.endKm - row.startKm)} km</strong></span>
+      </div>
+      <div class="ride-day-weather">${renderRideDayWeather(row.weatherSummary)}</div>
       <div class="ride-checkpoints">
         <div class="ride-checkpoint ride-checkpoint-start">
           <div><strong>${row.start}</strong><span>start dnia</span></div>
@@ -447,6 +452,20 @@ function renderRideRow(row) {
       </div>
     </article>
   `;
+}
+
+function renderRideDayWeather(summary) {
+  if (!summary) return `<span class="warning">pogoda niedostępna</span>`;
+  return `
+    <span><strong>${fmt(summary.tempMin)}–${fmt(summary.tempMax)}°C</strong></span>
+    <span class="rain ${rainStatus({ maxHourlyRain: summary.maxRain, precipitationSum: summary.rainSum, rainPeriods: [] }).level}">${rainDayLabel(summary)}</span>
+  `;
+}
+
+function rainDayLabel(summary) {
+  const status = rainStatus({ maxHourlyRain: summary.maxRain });
+  if (status.level === "dry") return "opady: brak / śladowe";
+  return `opady: ${status.label}, suma ${fmt(summary.rainSum)} mm, max ${fmt(summary.maxRain)} mm/h`;
 }
 
 function renderRideCheckpoint(checkpoint) {
@@ -473,6 +492,17 @@ async function forecastsForRideDate(date) {
   const cached = readCachedForecast(date) || await loadRouteForecast(date);
   writeCachedForecast(date, cached);
   return cached;
+}
+
+function rideDayWeatherSummary(checkpoints) {
+  const weather = checkpoints.map((checkpoint) => checkpoint.weather).filter(Boolean);
+  if (!weather.length) return null;
+  return {
+    tempMin: Math.min(...weather.map((item) => item.temperature).filter((value) => Number.isFinite(Number(value))).map(Number)),
+    tempMax: Math.max(...weather.map((item) => item.temperature).filter((value) => Number.isFinite(Number(value))).map(Number)),
+    rainSum: weather.reduce((sum, item) => sum + ((item.precipitation || 0) >= 0.2 ? item.precipitation : 0), 0),
+    maxRain: Math.max(0, ...weather.map((item) => item.precipitation || 0))
+  };
 }
 
 function rideCheckpoints(startKm, endKm, startTime, speed, date, dayForecasts) {

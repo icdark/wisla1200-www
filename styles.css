@@ -355,7 +355,7 @@ label { font-weight: 700; }
 
 .ride-row {
   display: grid;
-  grid-template-columns: 1.2fr .7fr .7fr;
+  grid-template-columns: 1.2fr 1.4fr 1.2fr;
   gap: 12px;
   align-items: start;
   padding: 14px;
@@ -366,7 +366,19 @@ label { font-weight: 700; }
 }
 
 .ride-row-main,
-.ride-weather {
+.ride-weather,
+.ride-day-weather {
+  display: grid;
+  gap: 3px;
+}
+
+.ride-day-range {
+  display: flex;
+  gap: 18px;
+  align-items: start;
+}
+
+.ride-day-range > span {
   display: grid;
   gap: 3px;
 }
