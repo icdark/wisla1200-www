@@ -287,7 +287,7 @@ label { font-weight: 700; }
 
 .ride-day {
   display: grid;
-  grid-template-columns: 1fr 130px 130px;
+  grid-template-columns: 1fr 130px 130px 130px;
   gap: 10px;
   align-items: end;
   padding: 10px;
@@ -530,6 +530,34 @@ label { font-weight: 700; }
 
 .shop-desc {
   color: var(--muted);
+}
+
+.poi-type {
+  display: inline-flex;
+  margin-right: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.poi-ujeb {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.poi-nocleg,
+.poi-noclegi {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.shop-desc a {
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
 }
 
 @media (max-width: 860px) {

@@ -56,28 +56,1009 @@ const routePoints = [
   { name: "Gdańsk", km: 1170, lat: 54.3520, lon: 18.6466 }
 ];
 
-const shops = [
-  [54, "Drogomyśl", "Sklep EMI"], [73, "Chybie", "Lewiatan, Intermarche"], [109, "Góra", "Żabka"],
-  [119, "Harmęże", "Sklep Euro"], [123, "Oświęcim", "Delikatesy Centrum"], [142, "Mętków", "Sklep Wisełka"],
-  [159, "Okleśna", "Sklepy spożywcze"], [181, "Facimiech", "Sklep spożywczy"], [195, "Kraków", "Żabka, KFC, BP"],
-  [207, "Kraków", "Żabka"], [209, "Kraków", "Biedronka, Carrefour Express, budki"], [212, "Kraków", "Orlen Kazimierz"],
-  [214, "Kraków", "Biedronka"], [227, "Brzegi", "Sklep spożywczy"], [234, "Niepołomice", "Zwał jak zwał, Orlen, Netto"],
-  [310, "Wietrzychowice", "Cezar Delikatesy"], [316, "Żabno", "Stacja Aramco"], [322, "Nieciecza", "Sklep spożywczy"],
-  [358, "Szczucin", "Orlen"], [360, "Rataje Słupskie", "Orlen"], [436, "Sandomierz", "Circle, Carrefour Express, Żabka, budki, knajpy, Orlen"],
-  [459, "Zawichost", "Żabka"], [471, "Annopol", "Biedronka, Spar, Lewiatan, knajpy"], [489, "Józefów", "Orlen, sklep spożywczy, Biedronka"],
-  [514, "Kępa Chotecka", "Odido"], [518, "Urządków", "Euro Sklep"], [529, "Kazimierz Dolny", "Budki, Lewiatan, Orlen"],
-  [543, "Puławy", "Biedronka, McDonald's"], [565, "Dęblin", "Lidl, Orlen"], [581, "Pawłowice", "Sklep ostatni"],
-  [624, "Wilga", "Bar Wilga"], [645, "Radwanków Szlachecki", "Artus"], [667, "Józefów", "Moya"],
-  [679, "Warszawa", "Circle, Biedronka, BP"], [688, "Warszawa", "Orlen"], [702, "Warszawa", "Biedronka, Lidl"],
-  [725, "Nowy Dwór Maz.", "McDonald's, MOL"], [760, "Czerwińsk nad Wisłą", "Dino, Lewiatan"], [769, "Wyszogród", "Delikatesy Centrum, Żabka, sklepy"],
-  [780, "Wyszogród", "Pitstop Podgórze"], [798, "Wykowo", "Lewiatan"], [810, "Płock", "Lewiatan"],
-  [816, "Płock", "Żabka, budki, market, Netto, Lidl"], [823, "Maszewo", "Dino, Lewiatan"], [847, "Dobrzyń nad Wisłą", "Delikatesy Centrum, Biedronka, Dino"],
-  [871, "Włocławek", "Lewiatan"], [885, "Bobrowniki", "Lewiatan"], [914, "Silno", "Żabka"],
-  [916, "Grabowiec", "Dino"], [920, "Toruń", "Biedronka"], [965, "Strzyżawa", "Artus"],
-  [968, "Ostromecko", "Żabka"], [1002, "Chełmno", "Biedronka, Żabka, budki"], [1028, "Grudziądz", "Biedronka"],
-  [1035, "Grudziądz", "Orlen"], [1075, "Opalenie", "Sklep spożywczy"], [1084, "Gniew", "Dino"],
-  [1105, "Mała Słońca", "Sklep spożywczy"], [1111, "Knybawa", "MOL"], [1161, "Sobieszewo", "Sklep Kami, Żabka"],
-  [1168, "Przejazdowo", "Lidl, Biedronka"], [1180, "Gdańsk", "Meta"]
+const pois = [
+  {
+    "km": 15.2,
+    "town": "Wisła",
+    "type": "SKLEP",
+    "description": "Żabka (trzeba odbić w lewo ze ścieżki do głównej drogi)"
+  },
+  {
+    "km": 16.7,
+    "town": "Wisła",
+    "type": "SKLEP",
+    "description": "Lidl (odbić w ul. Jawornik)"
+  },
+  {
+    "km": 20.3,
+    "town": "Ustroń",
+    "type": "STACJA",
+    "description": "Orlen  (po prawej przy głównej)"
+  },
+  {
+    "km": 30.0,
+    "town": "Harbutowice",
+    "type": "UJEB",
+    "description": "Krzoki"
+  },
+  {
+    "km": 36.0,
+    "town": "Skoczów",
+    "type": "STACJA",
+    "description": "Orlen (trzeba przejechać przez most do głównej)"
+  },
+  {
+    "km": 45.3,
+    "town": "Drogomyśl",
+    "type": "SKLEP",
+    "description": "EMI (6-20)"
+  },
+  {
+    "km": 52.5,
+    "town": "",
+    "type": "SKLEP",
+    "description": "Żabka"
+  },
+  {
+    "km": 54.2,
+    "town": "Zabłocie",
+    "type": "UJEB",
+    "description": "Wały goczałkowickie"
+  },
+  {
+    "km": 66.5,
+    "town": "",
+    "type": "UJEB",
+    "description": "Bobrowisko"
+  },
+  {
+    "km": 72.4,
+    "town": "",
+    "type": "PIT STOP",
+    "description": "za zaporą"
+  },
+  {
+    "km": 79.0,
+    "town": "Czechowice",
+    "type": "STACJA",
+    "description": "SHELL/BURGER KING - trzeba dojechać do głównej"
+  },
+  {
+    "km": 94.4,
+    "town": "Góra",
+    "type": "POI",
+    "description": "ŻABKA"
+  },
+  {
+    "km": 117.2,
+    "town": "",
+    "type": "WTR",
+    "description": "Asfalt"
+  },
+  {
+    "km": 120.2,
+    "town": "Bobrek",
+    "type": "SKLEP",
+    "description": "ŻABKA (trzeba zjechać z wału w lewo"
+  },
+  {
+    "km": 143.0,
+    "town": "Okleśna",
+    "type": "POI",
+    "description": "Ruiny Strażnicy CK z 1905r"
+  },
+  {
+    "km": 148.0,
+    "town": "Lipowa",
+    "type": "UJEB",
+    "description": "Wypych pod górkę za stawami"
+  },
+  {
+    "km": 154.5,
+    "town": "Chrząstowice",
+    "type": "POI",
+    "description": "Sklep  (6-19)"
+  },
+  {
+    "km": 178.5,
+    "town": "Klasztor w Tyńcu",
+    "type": "POI",
+    "description": "tu Snack Bary"
+  },
+  {
+    "km": 183.0,
+    "town": "Kraków",
+    "type": "SKLEP",
+    "description": "Jubilat (w połowie podjazdu przy skrzyżowaniu)"
+  },
+  {
+    "km": 186.3,
+    "town": "Kraków",
+    "type": "POI",
+    "description": "Kopiec Piłsudskiego"
+  },
+  {
+    "km": 189.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Stromy Podjazd"
+  },
+  {
+    "km": 191.0,
+    "town": "Kraków",
+    "type": "POI",
+    "description": "Kopiec Kościuszki"
+  },
+  {
+    "km": 198.0,
+    "town": "Kraków",
+    "type": "STACJA",
+    "description": "ORLEN - trzeba zjechać z wału"
+  },
+  {
+    "km": 207.3,
+    "town": "Kraków",
+    "type": "NOCLEG",
+    "description": "Willa Julia - Niepokalanej Panny Marii 76A, 31-589 Kraków, Polska +48535422088"
+  },
+  {
+    "km": 208.6,
+    "town": "Kraków",
+    "type": "NOCLEG",
+    "description": "Hostel Ciepły Kąt - Feliksa Wrobela 143B, 30-798 Kraków, Polska 696100068"
+  },
+  {
+    "km": 209.7,
+    "town": "Kraków",
+    "type": "NOCLEG",
+    "description": "Max Bruk - Bugaj 28, 30-799 Kraków, Polska, 575720650"
+  },
+  {
+    "km": 213.0,
+    "town": "Brzegi",
+    "type": "SKLEP",
+    "description": "GROSZEK (sb 6-21, nd 10-17)"
+  },
+  {
+    "km": 214.4,
+    "town": "Brzegi",
+    "type": "SKLEP",
+    "description": "KONGRES (sb 6-17, nd 10-14)"
+  },
+  {
+    "km": 217.5,
+    "town": "Niepołomice",
+    "type": "RESTAURACJA",
+    "description": "Nadwiślanka Jazz (sb 10.30-20.00, nd 10.30-19.00)"
+  },
+  {
+    "km": 219.2,
+    "town": "Niepołomice",
+    "type": "SKLEP",
+    "description": "DINO"
+  },
+  {
+    "km": 220.7,
+    "town": "Niepołomice",
+    "type": "PIT STOP",
+    "description": "Zwał Jak Zwał"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "POI",
+    "description": "stacja ORLEN"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "POI",
+    "description": "MCDONALDS (6-24)"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Pensjonat Alicja - Grabska 12L, 32-005 Niepołomice, Polska - 508103958"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Noclegi Niepołomice - Kasztanowa 11, 32-005 Niepołomice, Polska - 665031101"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Hotel Novum - Grunwaldzka 15H, 32-005 Niepołomice, Polska - 122798900"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Pokoje Gościnne - ul.Rotm, Rotmistrza Witolda Pileckiego 18, 32-005 Niepołomice, Polska - 605877190"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Pokoje do wynajęcia - Portowa 17A, 32-005 Niepołomice, Polska"
+  },
+  {
+    "km": 224.0,
+    "town": "Niepołomice",
+    "type": "NOCLEG",
+    "description": "Centrum KÓŁKO - Wiśniowa 22, 32-005 Niepołomice, Polska - 531700387"
+  },
+  {
+    "km": 241.0,
+    "town": "Nowe Brzesko",
+    "type": "POI",
+    "description": "Stacja ORLEN  (trzeba przejechać na drugą stronę Wisły i skręcić w prawo)"
+  },
+  {
+    "km": 241.0,
+    "town": "Nowe Brzesko",
+    "type": "SKLEP",
+    "description": "ŻABKA"
+  },
+  {
+    "km": 245.5,
+    "town": "Grobla",
+    "type": "BISTRO",
+    "description": "Apacz (nd. 14-22)"
+  },
+  {
+    "km": 254.5,
+    "town": "Uście Solne",
+    "type": "PIEKARNIA",
+    "description": "(nd 10-20)"
+  },
+  {
+    "km": 259.0,
+    "town": "Popędzyna",
+    "type": "ZABYTEK",
+    "description": "Dwór Sobolewskich - Ruina"
+  },
+  {
+    "km": 271.0,
+    "town": "Kopacze Wielkie",
+    "type": "SKLEP",
+    "description": "(nd. 10-16?)"
+  },
+  {
+    "km": 288.0,
+    "town": "Wietrzychowice",
+    "type": "STACJA",
+    "description": "Tank System (nd 9-16)"
+  },
+  {
+    "km": 304.5,
+    "town": "Żabno",
+    "type": "SKLEP",
+    "description": "Żabka (nd 9-21)"
+  },
+  {
+    "km": 309.3,
+    "town": "Nieciecza",
+    "type": "BISTO",
+    "description": "Klub Kibica (10-16)"
+  },
+  {
+    "km": 318.5,
+    "town": "Zalipie",
+    "type": "FOTO",
+    "description": "Malowana Wieś"
+  },
+  {
+    "km": 318.5,
+    "town": "Zalipie",
+    "type": "BISTRO",
+    "description": "u Zosi (nd 11-18.30)"
+  },
+  {
+    "km": 336.0,
+    "town": "Kupienin",
+    "type": "SKLEP",
+    "description": "Malinka (nd 11-16)"
+  },
+  {
+    "km": 344.0,
+    "town": "Szczucin",
+    "type": "SKLEP",
+    "description": "Biedronka (nd 8-22)"
+  },
+  {
+    "km": 344.0,
+    "town": "Szczucin",
+    "type": "SKLEP",
+    "description": "Żabka (nd 6-22)"
+  },
+  {
+    "km": 347.5,
+    "town": "Rataje Słupskie",
+    "type": "STACJA",
+    "description": "ORLEN (24h)"
+  },
+  {
+    "km": 361.4,
+    "town": "Łubnice",
+    "type": "SKLEP",
+    "description": "Market Express (nd 11-21)"
+  },
+  {
+    "km": 370.0,
+    "town": "Połaniec",
+    "type": "RESTAURACJA",
+    "description": "Syta Chata (nd 11-17)"
+  },
+  {
+    "km": 370.0,
+    "town": "Połaniec",
+    "type": "SKLEP",
+    "description": "Żabka (nd 10-20)"
+  },
+  {
+    "km": 370.0,
+    "town": "Połaniec",
+    "type": "NOCLEG",
+    "description": "Legionów 1, 28-230 Połaniec, Polska - 607535224"
+  },
+  {
+    "km": 370.0,
+    "town": "Połaniec",
+    "type": "NOCLEG",
+    "description": "Mielecka 43, 28-230 Połaniec, Polska - 158650113"
+  },
+  {
+    "km": 402.3,
+    "town": "Chodków Stary",
+    "type": "SKLEP U HELENKI",
+    "description": "(nd 8.30-13 15-20)"
+  },
+  {
+    "km": 411.2,
+    "town": "Kamieniec",
+    "type": "UFO",
+    "description": "Figura M.Boskiej przez UFO wziętej"
+  },
+  {
+    "km": 420.0,
+    "town": "Koćmierzów",
+    "type": "NOCLEG",
+    "description": "Koćmierzów 2, 27-650 Koćmierzów, Polska - 607560016"
+  },
+  {
+    "km": 420.0,
+    "town": "Zawisełcze",
+    "type": "NOCLEG",
+    "description": "Zawisełcze 2, 27-650 Zawisełcze, Polska - 607560016"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "Willa Krzemień - Krakowska 5B, 27-600 Sandomierz, Polska - 505107366"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "Salve Regina - Salve Regina 33, 27-600 Sandomierz, Polska - 662279289"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "Hotel Mały Rzym - Stefana Okrzei 9, 27-600 Sandomierz, Polska - 535449090"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "LAwendowe domki - Reformacka 6, 27-600 Sandomierz, Polska - 661888915"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "Kołodziejówka - Zawichojska 6, 27-600 Sandomierz, Polska -"
+  },
+  {
+    "km": 420.0,
+    "town": "Sandomierz",
+    "type": "NOCLEG",
+    "description": "Apart Hotel - Rynek 16-17, 27-600 Sandomierz, Polska - 790569086"
+  },
+  {
+    "km": 422.0,
+    "town": "SANDOMIERZ",
+    "type": "POI",
+    "description": "Rynek"
+  },
+  {
+    "km": 424.5,
+    "town": "Sandomierz",
+    "type": "POI",
+    "description": "ORLEN"
+  },
+  {
+    "km": 427.5,
+    "town": "",
+    "type": "UJEB",
+    "description": "Góry Pieprzowe"
+  },
+  {
+    "km": 445.0,
+    "town": "Zawichost",
+    "type": "SKLEP",
+    "description": "ŻABKA (6-23)"
+  },
+  {
+    "km": 445.5,
+    "town": "Zawichost",
+    "type": "FOTO",
+    "description": "Zabytkowy Wodowskaz"
+  },
+  {
+    "km": 457.5,
+    "town": "Annopol",
+    "type": "POI",
+    "description": "BISTRO (9-19)"
+  },
+  {
+    "km": 475.8,
+    "town": "Józefów nW",
+    "type": "STACJA",
+    "description": "ORLEN (6-22)"
+  },
+  {
+    "km": 476.5,
+    "town": "Józefów Nw",
+    "type": "NOCLEG",
+    "description": "Hotel - Nadwiślańska 19, 24-340 Józefów nad Wisłą, Polska 502710925"
+  },
+  {
+    "km": 484.0,
+    "town": "Piotrawin",
+    "type": "NOCLEG",
+    "description": "Domki Letniskowe - 506056063"
+  },
+  {
+    "km": 484.0,
+    "town": "Hotel Pałac",
+    "type": "NOCLEG",
+    "description": "Piotrawin 95, 24-335 Piotrawin, Polska - 600004608"
+  },
+  {
+    "km": 495.2,
+    "town": "Zakrzów",
+    "type": "SKLEP",
+    "description": "DINO (6-22.30), zjechać z trasy w prawo"
+  },
+  {
+    "km": 500.5,
+    "town": "Kępa Chotecka Sklep",
+    "type": "POI",
+    "description": "ODIDO (5.30-22)"
+  },
+  {
+    "km": 504.6,
+    "town": "Wilków",
+    "type": "SKLEP",
+    "description": "EURO (6-20)"
+  },
+  {
+    "km": 511.7,
+    "town": "",
+    "type": "FOTO",
+    "description": "Wiatrak i punkt widokowy"
+  },
+  {
+    "km": 513.8,
+    "town": "Kazimierz",
+    "type": "NOCLEG",
+    "description": "Hotel Spichlerz - Krakowska 61, 24-120 Kazimierz Dolny, Polska - 606901157"
+  },
+  {
+    "km": 515.0,
+    "town": "Kazimierz",
+    "type": "NOCLEG",
+    "description": "Villa Bohema - Juliusza Małachowskiego 12, 24-120 Kazimierz Dolny, Polska - 818810756"
+  },
+  {
+    "km": 520.0,
+    "town": "Bochotnica",
+    "type": "NOCLEG",
+    "description": "Stanisław Rodzik - Nałęczowska 26, 24-120 Bochotnica, Polska - 602433134"
+  },
+  {
+    "km": 526.0,
+    "town": "Puławy",
+    "type": "BISTRO",
+    "description": "Lodolandia"
+  },
+  {
+    "km": 534.0,
+    "town": "Puławy",
+    "type": "POI",
+    "description": "Restauracja McDonalds"
+  },
+  {
+    "km": 550.0,
+    "town": "Borowa",
+    "type": "SKLEP",
+    "description": "GROSZEK (6-21)"
+  },
+  {
+    "km": 553.0,
+    "town": "Dęblin",
+    "type": "SKLEP",
+    "description": "Lidl, Kaufland, Żabka"
+  },
+  {
+    "km": 554.0,
+    "town": "Dęblin",
+    "type": "NOCLEGI",
+    "description": "Bonsai - 1 Maja 40, 08-530 Dęblin, Polska - 533120100"
+  },
+  {
+    "km": 554.0,
+    "town": "Dęblin",
+    "type": "NOCLEGI",
+    "description": "Zajazd na Towarowej - Towarowa 5, 08-530 Dęblin, Polska - 502391380"
+  },
+  {
+    "km": 555.0,
+    "town": "Dęblin",
+    "type": "NOCLEGI",
+    "description": "Pokoje - Stefana Okrzei 9a, 08-530 Dęblin, Polska - 660528308"
+  },
+  {
+    "km": 564.2,
+    "town": "Prażmów",
+    "type": "NOCLEGI",
+    "description": "Agroturystyka Nad Brzegiem Wisły - Prażmów 36, 08-540 Stężyca, Polska - 575920301"
+  },
+  {
+    "km": 604.0,
+    "town": "",
+    "type": "POI",
+    "description": "PITSTOP KURKOWO ?"
+  },
+  {
+    "km": 616.0,
+    "town": "Stare Podole",
+    "type": "SKLEP",
+    "description": "Spożywczy (6-20)"
+  },
+  {
+    "km": 633.7,
+    "town": "Radwanków Szlachecki",
+    "type": "RESTAURACJA",
+    "description": "Podhulanka (11-19)"
+  },
+  {
+    "km": 638.0,
+    "town": "Ostrówek",
+    "type": "SKLEP",
+    "description": "(6-20.30)"
+  },
+  {
+    "km": 647.4,
+    "town": "Nadbrzeż",
+    "type": "POI",
+    "description": "SKLEP Odido (6-19)"
+  },
+  {
+    "km": 653.0,
+    "town": "Otwock/Józefów",
+    "type": "NOCLEG",
+    "description": "Holliday Inn - Telimeny 1, 05-420 Józefów, Polska - 227783000"
+  },
+  {
+    "km": 653.0,
+    "town": "Otwock",
+    "type": "NOCLEG",
+    "description": "Z-Hotel - Wczasowa 25, 05-400 Otwock, Polska - 227781130"
+  },
+  {
+    "km": 655.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Amazonia Otwocka"
+  },
+  {
+    "km": 671.0,
+    "town": "Warszawa",
+    "type": "NOCLEG",
+    "description": "Hotel B&B East - Kosmatki 8, 03-982 Warszawa, Polska - 223785444"
+  },
+  {
+    "km": 688.0,
+    "town": "Warszawa",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 713.0,
+    "town": "Nowy Dwór",
+    "type": "POI",
+    "description": "McDonalds, Stacja MOL, Neonet, Martes Sport"
+  },
+  {
+    "km": 720.5,
+    "town": "",
+    "type": "UJEB",
+    "description": "Zakroczymska Sawanna"
+  },
+  {
+    "km": 722.4,
+    "town": "Zakroczym",
+    "type": "SKLEP ŻABKA",
+    "description": "(6-23)"
+  },
+  {
+    "km": 738.7,
+    "town": "Wychódźc",
+    "type": "POI",
+    "description": "SKLEP"
+  },
+  {
+    "km": 746.7,
+    "town": "Czerwińsk",
+    "type": "POI",
+    "description": "SKLEP Dino (6-22.30)"
+  },
+  {
+    "km": 747.5,
+    "town": "Czerwińsk",
+    "type": "POI",
+    "description": "STACJA i SKLEP (7-19)"
+  },
+  {
+    "km": 755.5,
+    "town": "Wyszogród",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 759.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Okrągła Góra"
+  },
+  {
+    "km": 769.0,
+    "town": "",
+    "type": "POI",
+    "description": "PITSTOP PODGÓRZE"
+  },
+  {
+    "km": 786.0,
+    "town": "Wykowo",
+    "type": "SKLEP",
+    "description": "(6-19)"
+  },
+  {
+    "km": 804.0,
+    "town": "Płock",
+    "type": "SKLEP",
+    "description": "Żabka"
+  },
+  {
+    "km": 804.0,
+    "town": "Płock",
+    "type": "NOCLEG",
+    "description": "HOTEL TUMSKI - Piekarska 9, 09-400 Płock, Polska - 242629060"
+  },
+  {
+    "km": 805.0,
+    "town": "Płock",
+    "type": "NOCLEG",
+    "description": "Willa Adriana - Kazimierza Wielkiego 13, 09-400 Płock, Polska - 602133160"
+  },
+  {
+    "km": 806.0,
+    "town": "Płock",
+    "type": "NOCLEG",
+    "description": "Noclegi przy Jasnej - Jasna 3A, 09-400 Płock, Polska - 501105844"
+  },
+  {
+    "km": 810.0,
+    "town": "Maszewo",
+    "type": "SKLEP DINO",
+    "description": "(6-22.30)"
+  },
+  {
+    "km": 829.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Mostki pana Waldka"
+  },
+  {
+    "km": 833.5,
+    "town": "Dobrzyń",
+    "type": "NOCLEG",
+    "description": "Noclegi nad Wisłą - Farna 7, 87-610 Dobrzyń nad Wisłą, Polska - 600812151"
+  },
+  {
+    "km": 834.6,
+    "town": "Dobrzyń",
+    "type": "POI",
+    "description": "SKLEP DINO (6-22.30)"
+  },
+  {
+    "km": 856.7,
+    "town": "Włocławek",
+    "type": "NOCLEG",
+    "description": "Hotel Riverside - Piwna 3, 87-822 Włocławek, Polska - 542345206"
+  },
+  {
+    "km": 857.0,
+    "town": "Włocławek",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 872.0,
+    "town": "Bobrowniki",
+    "type": "POI",
+    "description": "SKLEP Dino"
+  },
+  {
+    "km": 872.0,
+    "town": "Bobrowniki",
+    "type": "NOCLEGI",
+    "description": "Agroturystyka - Nieszawska 20, 87-617 Bobrowniki, Polska - 785604171"
+  },
+  {
+    "km": 892.8,
+    "town": "",
+    "type": "FOTO",
+    "description": "Cmentarz Olenderski"
+  },
+  {
+    "km": 900.0,
+    "town": "Silno",
+    "type": "POI",
+    "description": "SKLEP Żabka (6-23)"
+  },
+  {
+    "km": 903.0,
+    "town": "Grabówiec",
+    "type": "POI",
+    "description": "SKLEP DINO (6-22.30)"
+  },
+  {
+    "km": 904.0,
+    "town": "Grabówiec",
+    "type": "NOCLEG",
+    "description": "Poranna Rosa - Syrenki 1, 87-162 Grabowiec, Polska - 505948938"
+  },
+  {
+    "km": 908.4,
+    "town": "",
+    "type": "UJEB",
+    "description": "Rybacka Ścieżka Przed Toruniem"
+  },
+  {
+    "km": 912.0,
+    "town": "Toruń",
+    "type": "NOCLEG",
+    "description": "Winnica Apartament - Winnica 45c/4, 87-100 Toruń, Polska - 883155854"
+  },
+  {
+    "km": 918.2,
+    "town": "Toruń",
+    "type": "POI",
+    "description": "SKLEP Żabka (w prawo do góry zjechać z trasy)"
+  },
+  {
+    "km": 924.4,
+    "town": "",
+    "type": "UJEB",
+    "description": "Toruńskie Wały"
+  },
+  {
+    "km": 946.3,
+    "town": "",
+    "type": "POI",
+    "description": "Koniec Wałów"
+  },
+  {
+    "km": 953.0,
+    "town": "Strzyżawa",
+    "type": "NOCLEG",
+    "description": "Strzyżawa 48, 86-070 Strzyżawa, Polska - 523439219"
+  },
+  {
+    "km": 955.0,
+    "town": "Ostromecko",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 960.0,
+    "town": "",
+    "type": "NOCLEG",
+    "description": "Spanie Pień"
+  },
+  {
+    "km": 980.0,
+    "town": "Agroturystyka Zielony Gaj",
+    "type": "NOCLEG",
+    "description": "Starogród 62, 86-200 Chełmno, Polska - 602798546"
+  },
+  {
+    "km": 980.0,
+    "town": "Starogród",
+    "type": "NOCLEG",
+    "description": "Czereśniowy Sad - Starogród 20, 86-200 Starogród, Polska - 609950011"
+  },
+  {
+    "km": 984.5,
+    "town": "",
+    "type": "UJEB",
+    "description": "Góra Wawrzyńca"
+  },
+  {
+    "km": 989.0,
+    "town": "Chełmno",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 990.0,
+    "town": "Chełmno",
+    "type": "NOCLEG",
+    "description": "Hotelik - Podmurna 3, 86-200 Chełmno, Polska - 500773181"
+  },
+  {
+    "km": 990.0,
+    "town": "Chełmno",
+    "type": "NOCLEG",
+    "description": "Stary Spichrz - Podmurna 7, 86-200 Chełmno, Polska - 537311090"
+  },
+  {
+    "km": 990.0,
+    "town": "Chełmno",
+    "type": "NOCLEG",
+    "description": "Pod Górą - Podgórna 3a, 86-200 Chełmno, Polska - 695761574"
+  },
+  {
+    "km": 994.0,
+    "town": "Chełmno",
+    "type": "NOCLEG",
+    "description": "u Agatki - Nowe Dobra 43A, 86-200 Chełmno, Polska - 691598605"
+  },
+  {
+    "km": 1015.0,
+    "town": "Grudziądz",
+    "type": "POI",
+    "description": "STACJA Orlen"
+  },
+  {
+    "km": 1016.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Single Track"
+  },
+  {
+    "km": 1020.0,
+    "town": "Grudziądz",
+    "type": "POI",
+    "description": "SKLEP Groszek (6-22)"
+  },
+  {
+    "km": 1022.0,
+    "town": "Grudziądz",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 1022.0,
+    "town": "Grudziądz",
+    "type": "POI",
+    "description": "Ruiny Zamku Krzyżackiego"
+  },
+  {
+    "km": 1026.0,
+    "town": "Grudziądz",
+    "type": "POI",
+    "description": "Cmentarz Mennonicki"
+  },
+  {
+    "km": 1030.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Góry Łosiowe"
+  },
+  {
+    "km": 1039.5,
+    "town": "Glina",
+    "type": "POI",
+    "description": "SKLEP"
+  },
+  {
+    "km": 1047.9,
+    "town": "Kaniczki",
+    "type": "POI",
+    "description": "SKLEP u Ewy (6-18.30)"
+  },
+  {
+    "km": 1050.0,
+    "town": "Grabowo Agroturystyka",
+    "type": "NOCLEGI",
+    "description": "Grabowo 20, 82-500 Sadlinki, Polska - 662480127"
+  },
+  {
+    "km": 1053.0,
+    "town": "Nowy Dwór",
+    "type": "POI",
+    "description": "SKLEP ABC"
+  },
+  {
+    "km": 1053.0,
+    "town": "Nowy Dwór",
+    "type": "AGROTURYSTYKA",
+    "description": "Grabówko 19, 82-500, Polska - 518485268"
+  },
+  {
+    "km": 1059.8,
+    "town": "Korzeniewo",
+    "type": "POI",
+    "description": "SKLEP GS (6-21)"
+  },
+  {
+    "km": 1074.0,
+    "town": "Gniew",
+    "type": "POI",
+    "description": "SKLEP Żabka"
+  },
+  {
+    "km": 1096.0,
+    "town": "Mała Słońca",
+    "type": "POI",
+    "description": "SKLEP (8-12, 17-19)"
+  },
+  {
+    "km": 1105.0,
+    "town": "Tczew",
+    "type": "NOCLEGI",
+    "description": "Czyżykowska 67, 83-110 Tczew, Polska - 587702126"
+  },
+  {
+    "km": 1106.5,
+    "town": "Tczew",
+    "type": "NOCLEGI",
+    "description": "Żeglarska 3, 83-110 Tczew, Polska - 575344355"
+  },
+  {
+    "km": 1114.0,
+    "town": "",
+    "type": "UJEB",
+    "description": "Łąki Tczewskie"
+  },
+  {
+    "km": 1130.0,
+    "town": "Kiezmark",
+    "type": "POI",
+    "description": "SKLEP (6-19)"
+  },
+  {
+    "km": 1144.0,
+    "town": "",
+    "type": "POI",
+    "description": "UJŚCIE MARTWEJ WISŁY"
+  },
+  {
+    "km": 1170.0,
+    "town": "",
+    "type": "POI",
+    "description": "META"
+  }
 ];
 
 const dateSelect = document.querySelector("#dateSelect");
@@ -149,13 +1130,20 @@ function initTabs() {
 }
 
 function renderShops() {
-  shopsListEl.innerHTML = shops.map(([km, town, description]) => `
-    <article class="shop-item">
-      <span class="shop-km">${km} km</span>
-      <strong class="shop-town">${town}</strong>
-      <span class="shop-desc">${description}</span>
+  shopsListEl.innerHTML = pois.map((poi) => `
+    <article class="shop-item poi-${poi.type.toLowerCase().replaceAll(" ", "-")}">
+      <span class="shop-km">${fmt(poi.km)} km</span>
+      <strong class="shop-town">${poi.town || poi.type}</strong>
+      <span class="shop-desc"><span class="poi-type">${poi.type}</span> ${linkPhones(poi.description)}</span>
     </article>
   `).join("");
+}
+
+function linkPhones(text) {
+  return text.replace(/(?:\+48\s*)?(\d{3})[\s-]?(\d{3})[\s-]?(\d{3})/g, (_match, first, second, third) => {
+    const number = `${first}${second}${third}`;
+    return `<a href="tel:+48${number}">${first} ${second} ${third}</a>`;
+  });
 }
 
 function renderRideInputs() {
@@ -169,6 +1157,10 @@ function renderRideInputs() {
       <label>
         Do
         <input class="form-control ride-end" type="time" value="22:00">
+      </label>
+      <label>
+        Śr. brutto
+        <input class="form-control ride-speed" type="number" min="1" step="0.5" value="16">
       </label>
     </div>
   `).join("");
@@ -222,7 +1214,8 @@ function saveRideSettings() {
     const days = Array.from(rideDaysEl.querySelectorAll(".ride-day")).map((day) => ({
       date: day.dataset.date,
       start: day.querySelector(".ride-start").value,
-      end: day.querySelector(".ride-end").value
+      end: day.querySelector(".ride-end").value,
+      speed: day.querySelector(".ride-speed").value
     }));
     localStorage.setItem(RIDE_SETTINGS_KEY, JSON.stringify({
       currentKm: currentKmInput.value,
@@ -258,6 +1251,7 @@ function restoreRideSettings() {
       if (!day) return;
       if (savedDay.start) day.querySelector(".ride-start").value = savedDay.start;
       if (savedDay.end) day.querySelector(".ride-end").value = savedDay.end;
+      if (savedDay.speed) day.querySelector(".ride-speed").value = savedDay.speed;
     });
     syncFirstRideDayStart();
   } catch (_error) {
@@ -293,22 +1287,23 @@ async function calculateRidePlan() {
     const plannedStart = rows.length === 0 ? startContext.time : (individual ? dayEl.querySelector(".ride-start").value : defaultRideStartInput.value);
     const start = date === START ? maxTime(plannedStart, rideStartTimeInput.value || "07:20") : plannedStart;
     const end = individual ? dayEl.querySelector(".ride-end").value : defaultRideEndInput.value;
+    const daySpeed = individual ? Number(dayEl.querySelector(".ride-speed").value) || speed : speed;
     if (previousArrivalTime) totalBreakHours += overnightBreakHours(previousArrivalTime, start);
 
     const availableHours = rideHours(start, end);
     const startKm = currentKm;
     const remainingKm = 1200 - startKm;
-    const neededHours = remainingKm / speed;
+    const neededHours = remainingKm / daySpeed;
     const reachesFinish = neededHours <= availableHours;
     const hours = reachesFinish ? neededHours : availableHours;
-    const endKm = reachesFinish ? 1200 : startKm + hours * speed;
+    const endKm = reachesFinish ? 1200 : startKm + hours * daySpeed;
     const arrivalTime = reachesFinish ? addHoursToTime(start, neededHours) : end;
     const dayForecasts = await forecastsForRideDate(date);
-    const checkpoints = rideCheckpoints(startKm, endKm, start, speed, date, dayForecasts);
+    const checkpoints = rideCheckpoints(startKm, endKm, start, daySpeed, date, dayForecasts);
     const weatherSummary = rideDayWeatherSummary(checkpoints);
 
     totalHours += hours;
-    rows.push({ date, start, end, arrivalTime, hours, totalHours, startKm, endKm, checkpoints, weatherSummary, reachesFinish });
+    rows.push({ date, start, end, speed: daySpeed, arrivalTime, hours, totalHours, startKm, endKm, checkpoints, weatherSummary, reachesFinish });
     currentKm = endKm;
     previousArrivalTime = arrivalTime;
 
@@ -429,7 +1424,7 @@ function renderRideRow(row) {
     <article class="ride-row ride-day-row">
       <div class="ride-row-main">
         <strong>${formatDate(row.date)}</strong>
-        <span>${row.start}–${row.arrivalTime}, ${formatDuration(row.hours)}</span>
+        <span>${row.start}–${row.arrivalTime}, ${formatDuration(row.hours)}, ${fmt(row.speed)} km/h</span>
       </div>
       <div class="ride-day-range">
         <span><span class="metric-title">Start</span><strong>${fmt(row.startKm)} km</strong></span>
