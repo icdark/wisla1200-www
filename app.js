@@ -132,8 +132,8 @@ const pois = [
   {
     "km": 117.2,
     "town": "",
-    "type": "WTR",
-    "description": "Asfalt"
+    "type": "POI",
+    "description": "WTR Asfalt"
   },
   {
     "km": 120.2,
@@ -318,7 +318,7 @@ const pois = [
   {
     "km": 259.0,
     "town": "Popędzyna",
-    "type": "ZABYTEK",
+    "type": "POI",
     "description": "Dwór Sobolewskich - Ruina"
   },
   {
@@ -348,7 +348,7 @@ const pois = [
   {
     "km": 318.5,
     "town": "Zalipie",
-    "type": "FOTO",
+    "type": "POI",
     "description": "Malowana Wieś"
   },
   {
@@ -420,7 +420,7 @@ const pois = [
   {
     "km": 411.2,
     "town": "Kamieniec",
-    "type": "UFO",
+    "type": "POI",
     "description": "Figura M.Boskiej przez UFO wziętej"
   },
   {
@@ -498,7 +498,7 @@ const pois = [
   {
     "km": 445.5,
     "town": "Zawichost",
-    "type": "FOTO",
+    "type": "POI",
     "description": "Zabytkowy Wodowskaz"
   },
   {
@@ -552,7 +552,7 @@ const pois = [
   {
     "km": 511.7,
     "town": "",
-    "type": "FOTO",
+    "type": "POI",
     "description": "Wiatrak i punkt widokowy"
   },
   {
@@ -816,7 +816,7 @@ const pois = [
   {
     "km": 892.8,
     "town": "",
-    "type": "FOTO",
+    "type": "POI",
     "description": "Cmentarz Olenderski"
   },
   {
@@ -1066,6 +1066,7 @@ const refreshButton = document.querySelector("#refreshButton");
 const clearCacheButton = document.querySelector("#clearCacheButton");
 const statusEl = document.querySelector("#status");
 const forecastEl = document.querySelector("#forecast");
+const shopsFiltersEl = document.querySelector("#shopsFilters");
 const shopsListEl = document.querySelector("#shopsList");
 const currentKmInput = document.querySelector("#currentKm");
 const grossSpeedInput = document.querySelector("#grossSpeed");
@@ -1086,6 +1087,7 @@ init();
 
 function init() {
   initTabs();
+  renderShopFilters();
   renderShops();
   renderRideInputs();
   restoreRideSettings();
@@ -1129,14 +1131,68 @@ function initTabs() {
   });
 }
 
+function renderShopFilters() {
+  const categories = [...new Set(pois.map(poiCategory))].sort((a, b) => a.localeCompare(b, "pl"));
+  shopsFiltersEl.innerHTML = `
+    <button id="toggleShopFilters" type="button" class="btn btn-sm btn-outline-secondary shop-filter-toggle">Odznacz wszystkie</button>
+    ${categories.map((category) => `
+      <label class="form-check shop-filter">
+        <input class="form-check-input" type="checkbox" value="${category}" checked>
+        <span class="form-check-label">${category}</span>
+      </label>
+    `).join("")}
+  `;
+  shopsFiltersEl.addEventListener("change", () => {
+    updateShopFiltersToggle();
+    renderShops();
+  });
+  shopsFiltersEl.querySelector("#toggleShopFilters").addEventListener("click", toggleShopFilters);
+}
+
+function toggleShopFilters() {
+  const inputs = Array.from(shopsFiltersEl.querySelectorAll("input[type='checkbox']"));
+  const shouldSelectAll = inputs.some((input) => !input.checked);
+  inputs.forEach((input) => input.checked = shouldSelectAll);
+  updateShopFiltersToggle();
+  renderShops();
+}
+
+function updateShopFiltersToggle() {
+  const inputs = Array.from(shopsFiltersEl.querySelectorAll("input[type='checkbox']"));
+  const button = shopsFiltersEl.querySelector("#toggleShopFilters");
+  if (button) button.textContent = inputs.every((input) => input.checked) ? "Odznacz wszystkie" : "Zaznacz wszystkie";
+}
+
 function renderShops() {
-  shopsListEl.innerHTML = pois.map((poi) => `
-    <article class="shop-item poi-${poi.type.toLowerCase().replaceAll(" ", "-")}">
-      <span class="shop-km">${fmt(poi.km)} km</span>
-      <strong class="shop-town">${poi.town || poi.type}</strong>
-      <span class="shop-desc"><span class="poi-type">${poi.type}</span> ${linkPhones(poi.description)}</span>
-    </article>
-  `).join("");
+  const selectedCategories = new Set(Array.from(shopsFiltersEl.querySelectorAll("input:checked")).map((input) => input.value));
+  const filteredPois = pois.filter((poi) => selectedCategories.has(poiCategory(poi)));
+
+  shopsListEl.innerHTML = filteredPois.map((poi) => {
+    const category = poiCategory(poi);
+    return `
+      <article class="shop-item poi-${categoryClass(category)}">
+        <span class="shop-km">${fmt(poi.km)} km</span>
+        <strong class="shop-town">${poi.town || category}</strong>
+        <span class="shop-desc"><span class="poi-type">${category}</span> ${linkPhones(poi.description)}</span>
+      </article>
+    `;
+  }).join("") || `<div class="shops-empty">Brak POI dla wybranych kategorii.</div>`;
+}
+
+function poiCategory(poi) {
+  const type = poi.type.toUpperCase();
+  const description = poi.description.toUpperCase();
+  const town = poi.town.toUpperCase();
+  if (type.includes("ŻABKA") || description.includes("ŻABKA")) return "ŻABKA";
+  if (type.includes("NOCLEG") || type.includes("AGROTURYSTYKA")) return "NOCLEG";
+  if (type.includes("BISTRO") || type.includes("BISTO") || type.includes("RESTAURACJA") || description.includes("BISTRO") || description.includes("RESTAURACJA") || description.includes("MCDONALD") || description.includes("SNACK BAR")) return "BISTRO / REST";
+  if (type.includes("STACJA") || description.includes("STACJA") || description.includes("ORLEN") || description.includes("MOL")) return "STACJA";
+  if (type.includes("SKLEP") || type.includes("PIEKARNIA") || description.includes("SKLEP") || description.includes("PIEKARNIA") || description.includes("DINO") || description.includes("ODIDO") || description.includes("GROSZEK") || description.includes("ABC") || town.includes("SKLEP")) return "SKLEP";
+  return poi.type;
+}
+
+function categoryClass(category) {
+  return `poi-${category.toLowerCase().replaceAll("ż", "z").replaceAll("/", "").replaceAll(" ", "-")}`;
 }
 
 function linkPhones(text) {

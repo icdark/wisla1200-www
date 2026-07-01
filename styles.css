@@ -466,6 +466,43 @@ label { font-weight: 700; }
   background: #fecaca;
 }
 
+.shops-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.shop-filter-toggle,
+.shop-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.shop-filter {
+  border: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.shop-filter .form-check-input {
+  margin: 0;
+}
+
+.shops-empty {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .shops-list {
   position: relative;
   display: grid;
